@@ -6,6 +6,7 @@ import { LONDON_PLACES } from '@shared/data/london';
 import { applyWeatherMode, simulatedWeather, type WeatherMode } from '@shared/weather';
 import { advance, createOrder, skip } from './lib/orders';
 import type { DroneQuote } from './lib/quotes';
+import { acceptQuote, advanceRental, createRental, newRentForm, skipRental, type RentForm, type RentOption, type RentPurpose, type Rental } from './lib/rental';
 import type { Order, OrderForm } from './lib/types';
 
 const place = (name: string, label: string, address: string): Place => ({ name: label, position: LONDON_PLACES.find((x) => x.name === name)!.position, address });
@@ -28,17 +29,26 @@ interface State {
   work: Place;
   payment: 'visa' | 'apple';
   orders: Order[];
+  rentals: Rental[];
   recents: Place[];
   view3d: boolean;
   weatherMode: WeatherMode;
   // not persisted
   form: OrderForm;
+  rentForm: RentForm;
   liveWeather?: Weather;
 }
 
 interface Actions {
   setForm: (patch: Partial<OrderForm>) => void;
   resetForm: () => void;
+  setRentForm: (patch: Partial<RentForm>) => void;
+  startRent: (purpose: RentPurpose) => void;
+  bookRental: (o: RentOption) => Rental;
+  acceptRentalQuote: (id: string) => void;
+  skipRental: (id: string) => void;
+  cancelRental: (id: string) => void;
+  rateRental: (id: string, stars: number) => void;
   setPlace: (which: 'home' | 'work', p: Place) => void;
   remember: (p: Place) => void;
   book: (q: DroneQuote) => Order;
@@ -64,13 +74,35 @@ export const useApp = create<State & Actions>()(
       work: DEFAULT_WORK,
       payment: 'visa',
       orders: [],
+      rentals: [],
       recents: [],
       view3d: false,
       weatherMode: 'live',
       form: newForm(DEFAULT_HOME),
+      rentForm: newRentForm(DEFAULT_HOME),
 
       setForm: (patch) => set({ form: { ...get().form, ...patch } }),
       resetForm: () => set({ form: newForm(get().home) }),
+      setRentForm: (patch) => set({ rentForm: { ...get().rentForm, ...patch } }),
+      startRent: (purpose) => {
+        const cur = get().rentForm;
+        set({ rentForm: { ...cur, purpose, place: cur.place ?? get().home } });
+      },
+      bookRental: (o) => {
+        const { rentForm } = get();
+        const r = createRental(rentForm, o, Date.now());
+        set({ rentals: [r, ...get().rentals].slice(0, 40) });
+        if (rentForm.place) get().remember(rentForm.place);
+        return r;
+      },
+      acceptRentalQuote: (id) => set({ rentals: get().rentals.map((r) => (r.id === id ? { ...r, ...acceptQuote(r, Date.now()) } : r)) }),
+      skipRental: (id) => {
+        const r = get().rentals.find((x) => x.id === id);
+        const p = r && skipRental(r, Date.now());
+        if (p) set({ rentals: get().rentals.map((x) => (x.id === id ? { ...x, ...p } : x)) });
+      },
+      cancelRental: (id) => set({ rentals: get().rentals.map((r) => (r.id === id ? { ...r, phase: 'cancelled' as const, phaseStartedAt: Date.now() } : r)) }),
+      rateRental: (id, stars) => set({ rentals: get().rentals.map((r) => (r.id === id ? { ...r, rating: stars } : r)) }),
       setPlace: (which, p) => {
         const named = { ...p, name: which === 'home' ? 'Home' : 'Work', address: p.address && p.address !== 'London' ? p.address : p.name };
         const form = get().form;
@@ -97,7 +129,14 @@ export const useApp = create<State & Actions>()(
           changed = true;
           return { ...o, ...p };
         });
-        if (changed) set({ orders });
+        let rchanged = false;
+        const rentals = get().rentals.map((r) => {
+          const p = advanceRental(r, now);
+          if (!p) return r;
+          rchanged = true;
+          return { ...r, ...p };
+        });
+        if (changed || rchanged) set({ ...(changed ? { orders } : {}), ...(rchanged ? { rentals } : {}) });
       },
       skip: (id) => {
         const o = get().orders.find((x) => x.id === id);
@@ -107,7 +146,11 @@ export const useApp = create<State & Actions>()(
       cancel: (id) => set({ orders: patchOrder(get().orders, id, { phase: 'cancelled', phaseStartedAt: Date.now() }) }),
       markCollected: (id) => set({ orders: patchOrder(get().orders, id, { collectedAt: Date.now() }) }),
       rate: (id, stars) => set({ orders: patchOrder(get().orders, id, { rating: stars }) }),
-      clearHistory: () => set({ orders: get().orders.filter((o) => o.phase !== 'done' && o.phase !== 'cancelled') }),
+      clearHistory: () =>
+        set({
+          orders: get().orders.filter((o) => o.phase !== 'done' && o.phase !== 'cancelled'),
+          rentals: get().rentals.filter((r) => r.phase !== 'done' && r.phase !== 'cancelled'),
+        }),
       setPayment: (payment) => set({ payment }),
       setView3d: (view3d) => set({ view3d }),
       setWeatherMode: (weatherMode) => set({ weatherMode }),
@@ -117,9 +160,13 @@ export const useApp = create<State & Actions>()(
       name: 'hive-app-v2',
       version: 2,
       storage: createJSONStorage(() => localStorage),
-      partialize: (s) => ({ name: s.name, home: s.home, work: s.work, payment: s.payment, orders: s.orders, recents: s.recents, view3d: s.view3d, weatherMode: s.weatherMode }),
+      partialize: (s) => ({ name: s.name, home: s.home, work: s.work, payment: s.payment, orders: s.orders, rentals: s.rentals, recents: s.recents, view3d: s.view3d, weatherMode: s.weatherMode }),
       onRehydrateStorage: () => (s) => {
-        if (s) s.form = newForm(s.home);
+        if (s) {
+          s.form = newForm(s.home);
+          s.rentForm = newRentForm(s.home);
+          s.rentals = s.rentals ?? [];
+        }
       },
     },
   ),

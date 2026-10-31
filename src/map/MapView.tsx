@@ -9,7 +9,7 @@ import { LocateFixed } from 'lucide-react';
 import clsx from 'clsx';
 import type { Flyability, LngLat, Pos3, Weather } from '@shared/types';
 import { DEMO_ZONES, LANDMARKS } from '@shared/data/london';
-import { destination, zoneCircle, zonePolygon } from '@shared/geo';
+import { circlePolygon, destination, zoneCircle, zonePolygon } from '@shared/geo';
 import { droneFlyability, effectiveWindMs } from '@shared/weather';
 import { useApp, useWeather } from '@/store';
 import { DRONE, PORTS } from '@/lib/drone';
@@ -190,15 +190,17 @@ export function MapView({ compact = false }: { compact?: boolean }) {
   };
 
   /** Frames the scene. With a tilted (3D) camera the map is zoomed out a little so nothing is cut off. */
-  const fit = (animate = true, cam?: { pitch: number; bearing: number }) => {
+  const fit = (animate = true) => {
     const map = mapRef.current;
     if (!map) return;
-    const pitch = cam?.pitch ?? map.getPitch();
-    const bearing = cam?.bearing ?? map.getBearing();
+    // Always aim for the mode's exact camera, so a re-frame during a 2D↔3D transition can't leave it half-tilted.
+    const is3d = useApp.getState().view3d;
+    const pitch = is3d ? PITCH_3D : 0;
+    const bearing = is3d ? (Math.abs(map.getBearing()) > 0.5 ? map.getBearing() : BEARING_3D) : 0;
     const pts = latest.current.fit;
     const duration = animate ? 800 : 0;
     if (!pts?.length) return map.easeTo({ center: START, zoom: 12, pitch, bearing, duration });
-    if (pts.length === 1) return map.easeTo({ center: pts[0], zoom: 14.4, pitch, bearing, duration });
+    if (pts.length === 1) return map.easeTo({ center: pts[0], zoom: latest.current.fitZoom ?? 14.4, pitch, bearing, duration });
     const b = new maplibregl.LngLatBounds(pts[0], pts[0]);
     pts.forEach((p) => b.extend(p));
     const padding = compact ? { top: 96, bottom: 52, left: 44, right: 44 } : { top: 120, bottom: 120, left: 110, right: 110 };
@@ -281,6 +283,9 @@ export function MapView({ compact = false }: { compact?: boolean }) {
     if (!ready || !map || !sets) return;
     setLine(map, 'route', scene.route);
     setLine(map, 'approach', scene.approach);
+    (map.getSource('area') as GeoJSONSource | undefined)?.setData(
+      scene.area ? { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [circlePolygon(scene.area.center, scene.area.radiusM)] } } : (EMPTY as any),
+    );
     overlayRef.current?.setProps({ layers: deckLayers(scene, view3d) });
     sets.stops.sync(
       (scene.stops ?? []).map((s) => ({
@@ -326,7 +331,7 @@ export function MapView({ compact = false }: { compact?: boolean }) {
   useEffect(() => {
     const map = mapRef.current;
     if (!ready || !map) return;
-    if (shown3d.current !== null && shown3d.current !== view3d) fit(true, { pitch: view3d ? PITCH_3D : 0, bearing: view3d ? BEARING_3D : 0 });
+    if (shown3d.current !== null && shown3d.current !== view3d) fit(true);
     shown3d.current = view3d;
     const vis = (id: string, on: boolean) => map.getLayer(id) && map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
     vis('building-3d', view3d && !offline);

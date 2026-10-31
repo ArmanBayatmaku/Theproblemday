@@ -15,6 +15,8 @@ export interface Scene {
   /** Points to frame; the map re-frames when `fitKey` changes. */
   fit?: LngLat[];
   fitKey?: string;
+  /** Zoom used when framing a single point. */
+  fitZoom?: number;
   /** Drone flight line (with altitude). */
   route?: Pos3[];
   /** The drone's flight from its port to the pickup. */
@@ -24,6 +26,8 @@ export interface Scene {
   selectedShopId?: string;
   onShop?: (c: CollectPoint) => void;
   drone?: { pos: Pos3; heading: number };
+  /** A drone rental's flight area (circle). */
+  area?: { center: LngLat; radiusM: number };
   /** No-fly zones to emphasise (the ones a route goes around). */
   hotZones?: string[];
   ports?: boolean;

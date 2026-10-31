@@ -6,7 +6,11 @@ import { hhmm, useNow } from '@/lib/format';
 import { useApp } from '@/store';
 import { Shell, useMedia } from '@/ui/Shell';
 import { HiveMark } from '@/ui/art';
+import { Home } from '@/screens/Home';
 import { Send } from '@/screens/Send';
+import { Rent } from '@/screens/Rent';
+import { RentOptions } from '@/screens/RentOptions';
+import { RentTrack } from '@/screens/RentTrack';
 import { Prices } from '@/screens/Prices';
 import { Track } from '@/screens/Track';
 import { Activity } from '@/screens/Activity';
@@ -31,9 +35,13 @@ function AppRoutes({ phone }: { phone?: boolean }) {
     <HashRouter>
       <Routes>
         <Route element={<Shell phone={phone} />}>
-          <Route path="/" element={<Send />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/send" element={<Send />} />
           <Route path="/prices" element={<Prices />} />
           <Route path="/order/:id" element={<Track />} />
+          <Route path="/rent" element={<Rent />} />
+          <Route path="/rent/options" element={<RentOptions />} />
+          <Route path="/rental/:id" element={<RentTrack />} />
           <Route path="/activity" element={<Activity />} />
           <Route path="/account" element={<Account />} />
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -107,7 +115,7 @@ function PhoneFrame({ children }: { children: ReactNode }) {
           Sold something online? Book a drone from your doorstep and it’s with your buyer in minutes, or at a shop near them to collect later. You’ll see what Waymo or Uber would charge too.
         </p>
         <ul className="mt-6 space-y-2 text-[15px]">
-          {['Flies around no-fly zones, live on a 2D or 3D map', 'Checks wind and weather before every flight', 'Custom sizes checked against the drone’s payload bay'].map((t) => (
+          {['Flies around no-fly zones, live on a 2D or 3D map', 'Rent a drone with a pilot: aerial views, events, roof checks', 'Checks wind and weather before every flight'].map((t) => (
             <li key={t} className="flex gap-2">
               <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-black shrink-0" /> {t}
             </li>

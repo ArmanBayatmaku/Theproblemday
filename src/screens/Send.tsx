@@ -10,11 +10,12 @@ import { useApp } from '@/store';
 import { useMapScene } from '@/map/scene';
 import { collectPointsNear, hoursText, isOpen, type CollectPoint } from '@/lib/collect';
 import { DRONE, SIZES, checkFit, type Fit, type SizeId } from '@/lib/drone';
-import { dayLabel, hhmm, useNow } from '@/lib/format';
+import { useNow } from '@/lib/format';
 import { customDims, destination, formProblem, startTime } from '@/lib/quotes';
 import type { OrderForm } from '@/lib/types';
-import { Btn, Chip, Section, Segmented, StickyFooter, Switch } from '@/ui/kit';
+import { Btn, Chip, Section, Segmented, StickyFooter, Switch, TopBar } from '@/ui/kit';
 import { PlacePicker } from '@/ui/PlacePicker';
+import { WhenPicker, firstSlot } from '@/ui/WhenPicker';
 import { useLayout } from '@/ui/Shell';
 
 export function Send() {
@@ -22,7 +23,6 @@ export function Send() {
   const layout = useLayout();
   const form = useApp((s) => s.form);
   const setForm = useApp((s) => s.setForm);
-  const name = useApp((s) => s.name);
   const remember = useApp((s) => s.remember);
   const now = useNow(30_000);
   const [picker, setPicker] = useState<null | 'from' | 'to'>(null);
@@ -73,10 +73,10 @@ export function Send() {
 
   return (
     <>
+      <TopBar title="Send a parcel" onBack={() => nav('/')} />
       <div className="flex-1">
-        <div className="px-5 pt-5">
-          {layout === 'phone' && <p className="text-[15px] text-[#6b6b6b]">Hi {name}</p>}
-          <h1 className={clsx('font-bold tracking-[-0.02em] leading-tight', layout === 'phone' ? 'text-[26px]' : 'text-[32px]')}>Send it by drone</h1>
+        <div className="px-5 pt-1">
+          <h1 className={clsx('font-bold tracking-[-0.02em] leading-tight', layout === 'phone' ? 'text-[26px]' : 'text-[30px]')}>Send it by drone</h1>
           <p className="mt-1 text-[15px] text-[#545454]">Across London in minutes. No post office, no queue.</p>
         </div>
 
@@ -299,62 +299,6 @@ function FitCheck({ fit, kg }: { fit: Fit; kg: number }) {
           </ul>
         </div>
       )}
-    </div>
-  );
-}
-
-/** Next half-hour slot at least 45 minutes away. */
-function firstSlot(now: number) {
-  const t = new Date(now + 45 * 60_000);
-  t.setSeconds(0, 0);
-  t.setMinutes(t.getMinutes() <= 30 ? 30 : 60);
-  return t.getTime();
-}
-
-function WhenPicker({ at, onChange }: { at: number; onChange: (t: number) => void }) {
-  const now = Date.now();
-  const days = [0, 1, 2].map((d) => {
-    const x = new Date(now + d * 86400_000);
-    x.setHours(0, 0, 0, 0);
-    return x.getTime();
-  });
-  const dayOf = (t: number) => {
-    const x = new Date(t);
-    x.setHours(0, 0, 0, 0);
-    return x.getTime();
-  };
-  const day = dayOf(at);
-  const slots: number[] = [];
-  for (let h = 7; h <= 21; h += 0.5) {
-    const t = day + h * 3600_000;
-    if (t >= firstSlot(now)) slots.push(t);
-  }
-  return (
-    <div className="mt-3 space-y-3">
-      <div className="flex gap-2">
-        {days.map((d) => (
-          <Chip
-            key={d}
-            active={d === day}
-            onClick={() => {
-              const keep = new Date(at);
-              const n = new Date(d);
-              n.setHours(keep.getHours(), keep.getMinutes());
-              onChange(Math.max(n.getTime(), firstSlot(now)));
-            }}
-          >
-            {dayLabel(d)}
-          </Chip>
-        ))}
-      </div>
-      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-        {slots.map((t) => (
-          <Chip key={t} active={Math.abs(t - at) < 60_000} onClick={() => onChange(t)} className="tabular-nums">
-            {hhmm(t)}
-          </Chip>
-        ))}
-        {!slots.length && <span className="text-[14px] text-[#6b6b6b] py-2">No more slots today — pick another day.</span>}
-      </div>
     </div>
   );
 }

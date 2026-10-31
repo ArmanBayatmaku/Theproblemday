@@ -1,6 +1,9 @@
-# Hive — drone delivery across London
+# Hive — drone delivery and drone rental across London
 
-Send something across London by drone in minutes: no post office, no queue. Hive shows what Waymo, Uber and other couriers would charge for the same trip, so you can see how the drone compares.
+Two things, one app:
+
+- **Send a parcel** across London by drone in minutes: no post office, no queue. Hive shows what Waymo, Uber and other couriers would charge for the same trip, so you can see how the drone compares.
+- **Drone rental**: a licensed pilot comes to you with a drone for aerial photos, events or a roof and gutter check. For anything else, you describe the job and get a personalised quote.
 
 Built for *the PROBLEM day* hackathon (31 Oct 2026). Branch `Arman-Mobile`: the people-first delivery app. The earlier operations dashboard (own fleets, warehouses, control panel) is still on `main`.
 
@@ -24,6 +27,10 @@ Requires Node 20.19+ (Node 22 recommended). Everything works with **no keys at a
 
 ## How it works
 
+The **Home** page has both services side by side, shortcuts (collect from a shop, aerial photos, event filming, roof check, something else), anything in progress and your recent activity.
+
+### Send a parcel
+
 One simple flow, the same on the website and the phone:
 
 1. **Where from, where to.** Home is pre-filled; search any London area or UK postcode.
@@ -36,6 +43,19 @@ One simple flow, the same on the website and the phone:
 6. **Prices.** The Hive drone is the option you book: price, arrival time, how much you save, and the route notes. **Waymo, Uber Courier, a cargo bike and a courier van** are shown underneath as estimates to compare.
 7. **Track it live.** The drone flies from its Hive port to you, picks up, and flies to the drop-off or shop. You get a PIN, a share link and a collection code. Demo time runs about 24× faster, and "Demo: skip ahead" jumps to the next step.
 
+### Drone rental
+
+1. **What's it for?**
+   - **Aerial view**: 15, 30 or 60 minutes in the air (£29 / £49 / £89).
+   - **Event**: weddings, parties, sport, launches. **The event length is required**, because event pilots are paid by the hour: £69/h with Drone + pilot, £119/h with Pro, plus £15 for setup. The price updates as soon as you pick the hours.
+   - **Roof & gutter check**: £59 for a house, or £89 for flats and larger buildings.
+   - **Other**: describe what you need and roughly how long. You get an estimate straight away, then a pilot sends a fixed, personalised quote, and nothing is charged until you accept it.
+2. **Where and when**: any address or postcode, as soon as possible or a time slot. The spot is checked against the no-fly zones and the wind at that time.
+3. **Choose a package**:
+   - **Drone + pilot**: a licensed pilot flies for you.
+   - **Pro**: a senior pilot, 4K kit and editing. On a roof check, Pro adds a thermal camera and a written report.
+4. **Track it**: the pilot travels to you, runs safety checks, and the drone circles the spot (at its real height in 3D). At the end you get the photos and video, the event film, or a roof report listing what was found.
+
 ### The map (2D and 3D)
 
 - **No-fly zones (demo only)**: airports, restricted areas, prisons, Royal Parks, a heliport and an event zone, drawn in red and labelled. In 3D they are red volumes.
@@ -43,14 +63,16 @@ One simple flow, the same on the website and the phone:
 - **Wind and weather**: arrows show the wind direction across the map, and a chip shows wind, gusts and whether drones can fly. Too windy grounds the drone; breezy slows it down.
 - **3D**: tilted view, 3D buildings (OpenFreeMap when online; a bundled skyline offline), with the flight line and live drone drawn at their real flying height (90 m).
 
-## Demo script (2 minutes)
+## Demo script (3 minutes)
 
-1. Website → **Deliver to "Paddington"**: the line bends around Regent's Park (demo no-fly zone).
+1. Website → **Send a parcel** → **Deliver to "Paddington"**: the line bends around Regent's Park (demo no-fly zone).
 2. **Collect** → pick a shop on the map. **Custom size** 50 × 30 × 20 cm → "Too big for the drone"; change 50 to 40 → "It fits". Turn **Fragile** on.
 3. **See prices**: the drone against Waymo and Uber. Switch to **3D**, **Book drone**, then "Demo: skip ahead" → **Ready to collect** with a code.
 4. Try **"Canary Wharf"**: the drop-off is inside a zone. Use "Collect from a shop outside the zone".
-5. **Account → Demo controls → Storm**: drones are grounded. (If real London wind grounds them during a demo, pick **Calm**.)
-6. Open **/mobile/** for the phone version.
+5. **Home → Event filming**: "See options" stays disabled until you pick the event length. Pick 3 h, choose **Pro**, book, skip ahead, and watch the drone circle in **3D**.
+6. **Home → Something else?**: describe a job, then **Request a quote**. The quote arrives a few seconds later; accept it.
+7. **Account → Demo controls → Storm**: drones are grounded. (If real London wind grounds them during a demo, pick **Calm**.)
+8. Open **/mobile/** for the phone version.
 
 ## Architecture
 
@@ -59,15 +81,16 @@ src/                       React 19 + Vite + Tailwind 4 (one app, two entry poin
   main.tsx / phone.tsx     website (/) and phone app (/mobile/)
   App.tsx                  routes, background work (weather, order ticks), phone frame
   store.ts                 zustand store (persisted): form, orders, saved places, settings
-  screens/                 Send, Prices, Track, Activity, Account
+  screens/                 Home, Send, Prices, Track (delivery), Rent, RentOptions, RentTrack (rental), Activity, Account
   map/                     MapView (MapLibre + deck.gl), light style, scene store
   lib/
     quotes.ts              drone price + comparison estimates
     drone.ts               aircraft limits, payload bay, fit check, Hive ports
     collect.ts             partner shops near a drop-off (demo data)
     orders.ts              delivery simulation (dispatch → pickup → flight → drop-off)
+    rental.ts              drone rental: purposes, packages, prices, personalised quotes, pilot + flight simulation
     weather.ts geocode.ts  Open-Meteo, London places + postcodes.io
-  ui/                      Shell (website vs phone layout), kit, art, PlacePicker
+  ui/                      Shell (website vs phone layout), kit, art, PlacePicker, WhenPicker
 shared/                    code used by both web and server
   routing.ts               drone route planner (visibility graph around zones and tall buildings)
   geo.ts weather.ts        geometry, flyability (wind, gusts, rain, temperature)
@@ -93,4 +116,4 @@ Waymo doesn't offer a public self-serve delivery API; its London launch is a rid
 - **Partner shops** are generated near the drop-off with made-up names; closed shops can't be picked.
 - **Comparison prices** are estimates from typical fares. Uber's courier limit follows its published small-item rules (~15 lb / 6.8 kg). CityHop and Thames Express are fictional.
 - **Weather** comes from Open-Meteo (free for non-commercial use) and is simulated offline. Account → Demo controls overrides it.
-- Pilots, drones, tracking links and payments are simulated.
+- Pilots, quotes, results (photos, films, roof reports), drones, tracking links and payments are simulated.

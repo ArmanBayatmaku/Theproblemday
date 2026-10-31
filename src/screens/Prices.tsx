@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
-import { ChevronDown, CircleAlert, CreditCard, Leaf, PackageCheck, Route, Store, Wind } from 'lucide-react';
+import { ChevronDown, CircleAlert, Leaf, PackageCheck, Route, Store, Wind } from 'lucide-react';
 import type { LngLat } from '@shared/types';
 import { useApp, useWeather } from '@/store';
 import { useMapScene } from '@/map/scene';
@@ -10,7 +10,7 @@ import { collectPointsNear } from '@/lib/collect';
 import { dayLabel, hhmm, mins, money } from '@/lib/format';
 import { compareProviders, destination, droneVerdict, formProblem, quoteDrone, startTime, type Comparison, type DroneQuote } from '@/lib/quotes';
 import { SIZES } from '@/lib/drone';
-import { Badge, Btn, Note, Section, StickyFooter, TopBar } from '@/ui/kit';
+import { Badge, Btn, Note, PaymentRow, Section, StickyFooter, TopBar } from '@/ui/kit';
 import { CompareArt, DroneArt } from '@/ui/art';
 
 export function Prices() {
@@ -39,7 +39,7 @@ export function Prices() {
     [q, target?.position.join()],
   );
 
-  if (problem || !q || !form.from || !target) return <Navigate to="/" replace />;
+  if (problem || !q || !form.from || !target) return <Navigate to="/send" replace />;
   const verdict = droneVerdict(q, others);
   const later = form.when.mode === 'later';
 
@@ -49,12 +49,12 @@ export function Prices() {
       setForm({ dropoff: 'collect', shop });
     }
     if (q.fix === 'later') setForm({ when: { mode: 'later', at: Date.now() + 3 * 3600_000 - (Date.now() % 1_800_000) } });
-    nav('/');
+    nav('/send');
   };
 
   return (
     <>
-      <TopBar title="Your drone delivery" onBack={() => nav('/')} />
+      <TopBar title="Your drone delivery" onBack={() => nav('/send')} />
       <div className="flex-1">
         <div className="px-5">
           <DroneCard q={q} badges={verdict.badges} line={verdict.line} later={later} start={startTime(form, now)} />
@@ -194,19 +194,5 @@ function TripRow({ label, value }: { label: string; value: string }) {
       <span className="w-20 shrink-0 text-[#6b6b6b]">{label}</span>
       <span className="flex-1 min-w-0 font-medium">{value}</span>
     </div>
-  );
-}
-
-function PaymentRow() {
-  const payment = useApp((s) => s.payment);
-  const setPayment = useApp((s) => s.setPayment);
-  return (
-    <button type="button" onClick={() => setPayment(payment === 'visa' ? 'apple' : 'visa')} className="w-full flex items-center gap-3 mb-3 text-left">
-      <span className="w-10 h-7 rounded-md bg-[#f3f3f3] grid place-items-center">
-        <CreditCard size={17} />
-      </span>
-      <span className="flex-1 text-[15px] font-medium">{payment === 'visa' ? 'Visa •••• 4242' : 'Apple Pay'}</span>
-      <span className="text-[13px] text-[#6b6b6b]">Change</span>
-    </button>
   );
 }

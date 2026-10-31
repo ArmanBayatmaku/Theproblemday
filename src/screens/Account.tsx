@@ -10,7 +10,7 @@ export function Account() {
   const s = useApp();
   const [picker, setPicker] = useState<null | 'home' | 'work'>(null);
   useMapScene({ ports: true, fitKey: 'account' }, []);
-  const done = s.orders.filter((o) => o.phase === 'done' || o.phase === 'cancelled').length;
+  const done = [...s.orders, ...s.rentals].filter((o) => o.phase === 'done' || o.phase === 'cancelled').length;
 
   return (
     <div className="flex-1 pb-8">
@@ -18,7 +18,9 @@ export function Account() {
         <div className="w-14 h-14 rounded-full bg-black text-white grid place-items-center text-[22px] font-bold">{s.name[0]}</div>
         <div>
           <h1 className="text-[26px] font-bold tracking-[-0.02em] leading-tight">{s.name}</h1>
-          <p className="text-[14px] text-[#6b6b6b]">{s.orders.length} drone {s.orders.length === 1 ? 'delivery' : 'deliveries'}</p>
+          <p className="text-[14px] text-[#6b6b6b]">
+            {s.orders.length} {s.orders.length === 1 ? 'delivery' : 'deliveries'} · {s.rentals.length} drone {s.rentals.length === 1 ? 'rental' : 'rentals'}
+          </p>
         </div>
       </div>
 
@@ -68,7 +70,7 @@ export function Account() {
           ]}
         />
         <Btn variant="secondary" size="md" className="w-full mt-3" disabled={!done} onClick={s.clearHistory}>
-          Clear past deliveries
+          Clear past activity
         </Btn>
       </Section>
 

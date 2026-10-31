@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 
 export const money = (n: number) => `£${n.toFixed(2)}`;
+/** Whole pounds, for estimates (e.g. £113). */
+export const pounds = (n: number) => `£${Math.round(n)}`;
 export const hhmm = (t: number) => new Date(t).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 export const mph = (ms: number) => Math.round(ms * 2.237);
 export const km = (v: number) => (v < 1 ? `${Math.round(v * 1000)} m` : `${v.toFixed(1)} km`);

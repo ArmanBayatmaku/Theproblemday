@@ -2,9 +2,10 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
-import { ArrowLeft, CircleUser, Receipt, Send } from 'lucide-react';
+import { ArrowLeft, CircleUser, CreditCard, House, Receipt } from 'lucide-react';
 import { useApp } from '@/store';
 import { isActive } from '@/lib/orders';
+import { rentalActive } from '@/lib/rental';
 
 type BtnVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'white';
 export function Btn({ variant = 'primary', size = 'lg', className, children, ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: BtnVariant; size?: 'sm' | 'md' | 'lg' }) {
@@ -113,13 +114,13 @@ export function StickyFooter({ children }: { children: ReactNode }) {
 }
 
 export const NAV = [
-  { to: '/', label: 'Send', icon: Send },
+  { to: '/', label: 'Home', icon: House },
   { to: '/activity', label: 'Activity', icon: Receipt },
   { to: '/account', label: 'Account', icon: CircleUser },
 ];
 
 export function useActiveCount() {
-  return useApp((s) => s.orders.filter(isActive).length);
+  return useApp((s) => s.orders.filter(isActive).length + s.rentals.filter(rentalActive).length);
 }
 
 export function TabBar() {
@@ -179,4 +180,22 @@ export function Note({ icon, children, tone = 'grey' }: { icon: ReactNode; child
       <span>{children}</span>
     </div>
   );
+}
+
+export function PaymentRow() {
+  const payment = useApp((s) => s.payment);
+  const setPayment = useApp((s) => s.setPayment);
+  return (
+    <button type="button" onClick={() => setPayment(payment === 'visa' ? 'apple' : 'visa')} className="w-full flex items-center gap-3 mb-3 text-left">
+      <span className="w-10 h-7 rounded-md bg-[#f3f3f3] grid place-items-center">
+        <CreditCard size={17} />
+      </span>
+      <span className="flex-1 text-[15px] font-medium">{payment === 'visa' ? 'Visa •••• 4242' : 'Apple Pay'}</span>
+      <span className="text-[13px] text-[#6b6b6b]">Change</span>
+    </button>
+  );
+}
+
+export function TextArea({ className, ...p }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return <textarea {...p} className={clsx('w-full min-h-[96px] rounded-xl bg-[#f3f3f3] px-4 py-3 text-[16px] outline-none placeholder:text-[#8f8f8f] focus:ring-2 focus:ring-black resize-none', className)} />;
 }

@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { Smartphone } from 'lucide-react';
 import { MapView } from '@/map/MapView';
 import { HiveMark } from './art';
-import { NAV, TabBar, useActiveCount } from './kit';
+import { TabBar, useActiveCount } from './kit';
 import { OverlayRoot } from './PlacePicker';
 
 export type Layout = 'phone' | 'desktop';
@@ -40,7 +40,15 @@ function useScrollReset() {
   return ref;
 }
 
+const DESKTOP_NAV: { to: string; label: string; match: (p: string) => boolean }[] = [
+  { to: '/', label: 'Home', match: (p) => p === '/' },
+  { to: '/send', label: 'Send', match: (p) => p === '/send' || p === '/prices' || p.startsWith('/order/') },
+  { to: '/rent', label: 'Drone rental', match: (p) => p.startsWith('/rent') },
+  { to: '/activity', label: 'Activity', match: (p) => p === '/activity' },
+];
+
 function Desktop() {
+  const { pathname } = useLocation();
   const [panel, setPanel] = useState<HTMLElement | null>(null);
   const active = useActiveCount();
   const scroller = useScrollReset();
@@ -52,19 +60,22 @@ function Desktop() {
           <span className="text-[24px] font-extrabold tracking-[-0.04em]">Hive</span>
         </NavLink>
         <nav className="flex items-center gap-1">
-          {NAV.map((t) => (
-            <NavLink key={t.to} to={t.to} end className={({ isActive }) => clsx('h-10 px-4 rounded-full text-[15px] font-semibold inline-flex items-center gap-2 transition', isActive ? 'bg-black text-white' : 'hover:bg-[#f3f3f3]')}>
-              {t.label}
-              {t.to === '/activity' && active > 0 && <span className="min-w-[19px] h-[19px] px-1 rounded-full bg-[#276ef1] text-white text-[11px] font-bold grid place-items-center">{active}</span>}
-            </NavLink>
-          ))}
+          {DESKTOP_NAV.map((t) => {
+            const on = t.match(pathname);
+            return (
+              <NavLink key={t.to} to={t.to} className={clsx('h-10 px-4 rounded-full text-[15px] font-semibold inline-flex items-center gap-2 transition', on ? 'bg-black text-white' : 'hover:bg-[#f3f3f3]')}>
+                {t.label}
+                {t.to === '/activity' && active > 0 && <span className="min-w-[19px] h-[19px] px-1 rounded-full bg-[#276ef1] text-white text-[11px] font-bold grid place-items-center">{active}</span>}
+              </NavLink>
+            );
+          })}
         </nav>
         <div className="ml-auto flex items-center gap-3">
           <span className="text-[14px] text-[#6b6b6b] hidden xl:inline">Drone delivery across London</span>
           <a href="/mobile/" className="h-10 px-4 rounded-full bg-[#f3f3f3] hover:bg-[#eaeaea] text-[14px] font-semibold inline-flex items-center gap-2">
             <Smartphone size={16} /> Phone app
           </a>
-          <NavLink to="/account" className="w-10 h-10 rounded-full bg-black text-white grid place-items-center font-semibold">
+          <NavLink to="/account" aria-label="Account" title="Account" className="w-10 h-10 rounded-full bg-black text-white grid place-items-center font-semibold">
             A
           </NavLink>
         </div>
@@ -87,9 +98,11 @@ function Desktop() {
 
 /** How much of the phone screen the map takes, per screen. */
 function mapHeight(path: string) {
-  if (path.startsWith('/order/')) return '48%';
-  if (path.startsWith('/prices')) return '40%';
-  if (path === '/') return '38%';
+  if (path.startsWith('/order/') || path.startsWith('/rental/')) return '48%';
+  if (path.startsWith('/prices') || path === '/rent/options') return '40%';
+  if (path === '/send') return '38%';
+  if (path === '/rent') return '34%';
+  if (path === '/') return '28%';
   return '0%';
 }
 
