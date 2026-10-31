@@ -20,6 +20,7 @@ import type {
   Zone,
 } from '@shared/types';
 import { DEMO_ZONES, LANDMARKS } from '@shared/data/london';
+import { DEFAULT_COSTS } from '@shared/costs';
 import { quoteAll } from '@shared/pricing';
 import { applyWeatherMode, simulatedWeather, type WeatherMode } from '@shared/weather';
 import { resolvePlace } from '@shared/parser';
@@ -56,20 +57,7 @@ export interface LayerToggles {
   labels: boolean;
 }
 
-export const DEFAULT_COSTS: CostSettings = {
-  dieselPerLitre: 1.45,
-  petrolPerLitre: 1.38,
-  electricityPerKwh: 0.32,
-  driverWagePerHour: 18,
-  minBillableMinutes: 60,
-  congestionCharge: 18,
-  congestionChargeEvVan: 9,
-  ulezCharge: 12.5,
-  wearPerKmVan: 0.18,
-  wearPerKmTruck: 0.42,
-  robotSupervisionPerHour: 6,
-  handlingMinutes: 12,
-};
+export { DEFAULT_COSTS };
 
 export const emptyDraft = (): JobDraft => ({
   cargo: { description: '', weightKg: 2, quantity: 1, size: 'small' },

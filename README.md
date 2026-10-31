@@ -17,6 +17,15 @@ Requires Node 20.19+ (Node 22 recommended). Everything works with **no keys at a
 
 Production build: `npm run build && npm start` (the API server then also serves the app on :8787).
 
+**Two apps in one repo**
+
+| URL | For |
+|---|---|
+| http://localhost:5173/ | **Operations dashboard** for companies running fleets |
+| http://localhost:5173/mobile/ | **Hive consumer app**, a mobile app for people (shown inside a phone frame on a laptop) |
+
+To try the consumer app on your phone, run `npm run dev:phone` and open the "Network" address Vite prints, plus `/mobile/`, on a phone on the same Wi-Fi. It can be added to the home screen like an app.
+
 ## What's in it
 
 | Page | What it does |
@@ -31,6 +40,23 @@ Production build: `npm run build && npm start` (the API server then also serves 
 | **Control Panel** | Control anything registered: pause/resume/hold, return to base, go-to, take off/land, **E-STOP** (with hold-to-confirm for the global one), charge, payload bay, lights/horn, sleep/wake, reboot, firmware, speed limits, reassignment, driver messages, cancel provider trips. **Playbooks** (storm protocol, ground all drones, recall, night mode…), live telemetry and a full command audit log. Natural-language commands too: “return all drones at Nine Elms”. |
 | **Integrations** | Status and test buttons for providers, device adapters, AI and data feeds. |
 | **Settings** | Own-fleet cost model, simulation speed, weather override (calm / breezy / storm to demo drone groundings), demo reset. |
+
+### Hive consumer app (`/mobile/`)
+
+An Uber-style app for individuals, not businesses. Pick what you need, see every option priced side by side (drone, Waymo, courier, cargo bike, van), choose one and track it live.
+
+| Service | What it does |
+|---|---|
+| **Send** | Get something to anyone in London. |
+| **Sold it?** | Sold something online? We collect from your door and deliver it to the buyer, so there's no post office trip. The buyer can pay for delivery through a link and gets live tracking by text. |
+| **Collect** | Bought something secondhand? We pick it up from the seller. You can also have the courier send photos first so you can approve the item before it's collected. |
+| **Return** | Return an online order to a parcel locker, drop-off shop or the retailer, and optionally have the label printed for you. |
+| **Errand** | Keys, a prescription or a forgotten charger. We pick it up, and can buy it for you. |
+| **Move** | A sofa, a bike or boxes, with a van and 0–2 helpers. |
+| **Ride** | Go yourself in a driverless Waymo or an Uber. |
+| **Drone shot** | Aerial photos, a short film or a roof check by a licensed pilot. It checks no-fly zones and wind first. |
+
+Type what you need ("sold my jacket, buyer is in Hackney") and the app picks the service and fills in the details. Deliveries use the same quote engine as the dashboard (`shared/pricing.ts`); rides and drone shoots have their own simple fare models (`src/mobile/quotes.ts`). Tracking is simulated at demo speed, and "Demo: skip ahead" jumps to the next step.
 
 `⌘K` / `Ctrl K` opens a command palette: jump anywhere, find any machine/job/location, or type a command or a delivery request.
 
@@ -56,6 +82,7 @@ src/                     React 19 + Vite + Tailwind 4 web app
     devices/             capabilities per machine type, protocol translations, simulator (digital twin)
     weather.ts           Open-Meteo (wind at 10/80/120 m, gusts, rain, visibility)
     geocode.ts           sites + London places + postcodes.io
+  mobile/                Hive consumer app (screens, light map, consumer pricing, order simulation)
 shared/                  code used by both web and server
   types.ts               domain model
   pricing.ts             quote engine for every provider + own-fleet costing + ranking

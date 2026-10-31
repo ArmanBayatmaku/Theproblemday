@@ -10,6 +10,8 @@ import {
   Package,
   Plug,
   Settings,
+  Smartphone,
+  ExternalLink,
   Sparkles,
   Warehouse,
   Drone,
@@ -69,6 +71,10 @@ export function Sidebar({ onHelp }: { onHelp: () => void }) {
         <NavLink to="/settings" className={({ isActive }) => clsx('flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px]', isActive ? 'bg-[#262b31] text-text' : 'text-[#c3c9cf] hover:bg-[#22262b]')}>
           <Settings size={17} className="text-[#9aa2ab]" /> Settings
         </NavLink>
+        <a href="/mobile/" target="_blank" rel="noreferrer" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] text-[#c3c9cf] hover:bg-[#22262b]">
+          <Smartphone size={17} className="text-[#9aa2ab]" /> <span className="flex-1">Customer app</span>
+          <ExternalLink size={13} className="text-dim" />
+        </a>
         <button type="button" onClick={onHelp} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] text-[#c3c9cf] hover:bg-[#22262b]">
           <CircleQuestionMark size={17} className="text-[#9aa2ab]" /> <span className="flex-1 text-left">Help</span>
           <ChevronRight size={14} className="text-dim" />

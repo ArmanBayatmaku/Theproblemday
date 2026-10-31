@@ -2,13 +2,14 @@
   "name": "hive-autonomous-ops",
   "private": true,
   "version": "0.1.0",
-  "description": "HIVE — autonomous delivery & operations control for London (The Problem Day hackathon)",
+  "description": "HIVE \u2014 autonomous delivery & operations control for London (The Problem Day hackathon)",
   "type": "module",
   "engines": {
     "node": ">=20.19"
   },
   "scripts": {
     "dev": "concurrently -k -n web,api -c cyan,magenta \"vite\" \"tsx watch server/index.ts\"",
+    "dev:phone": "concurrently -k -n web,api -c cyan,magenta \"vite --host\" \"tsx watch server/index.ts\"",
     "dev:web": "vite",
     "dev:api": "tsx watch server/index.ts",
     "build": "tsc --noEmit -p tsconfig.json && vite build",
