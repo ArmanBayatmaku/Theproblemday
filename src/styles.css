@@ -55,9 +55,10 @@ body {
   animation: hv-progress 1.4s ease-in-out infinite;
 }
 
-/* ---- map markers ---- */
+/* ---- map markers ----
+   Marker roots must not set "position": maplibre positions them absolutely (which also anchors
+   their absolutely positioned labels). Overriding it stacks the markers in normal flow, offset. */
 .hv-stop {
-  position: relative;
   width: 18px;
   height: 18px;
 }
@@ -101,7 +102,6 @@ body {
 
 /* Partner shops that receive drones (Collect). */
 .hv-shop {
-  position: relative;
   width: 30px;
   height: 30px;
   border-radius: 9px;
@@ -146,7 +146,47 @@ body {
   display: block;
 }
 
-/* Hive drone ports. */
+/* Coming soon: planned charging sites. */
+.hv-station {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  display: grid;
+  place-items: center;
+  cursor: default;
+}
+.hv-station.is-petrol {
+  color: #c2410c;
+}
+.hv-station.is-ev {
+  color: #1f8f55;
+}
+.hv-station-ic {
+  width: 15px;
+  height: 15px;
+}
+.hv-station-label {
+  position: absolute;
+  top: 31px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: #fff;
+  color: #000;
+  font: 600 11px/1.2 Inter, sans-serif;
+  padding: 3px 6px;
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  display: none;
+  pointer-events: none;
+}
+.hv-station:hover .hv-station-label {
+  display: block;
+}
+
+/* Relay drone ports. */
 .hv-port {
   width: 20px;
   height: 20px;

@@ -1,4 +1,4 @@
-// Prices: the Hive drone (bookable) with Waymo, Uber and others alongside as estimates to compare.
+// Prices: the Relay drone (bookable) with Waymo, Uber and others alongside as estimates to compare.
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
@@ -72,7 +72,7 @@ export function Prices() {
             ))}
           </div>
           <p className="mt-2 text-[12px] text-[#8f8f8f] leading-snug">
-            For comparison only: typical fares for the same trip. Hive books the drone; Waymo and Uber aren’t connected yet. CityHop and Thames Express are demo names.
+            For comparison only: typical fares for the same trip. Relay books the drone; Waymo and Uber aren’t connected yet. CityHop and Thames Express are demo names.
           </p>
         </Section>
 
@@ -111,7 +111,7 @@ function DroneCard({ q, badges, line, later, start }: { q: DroneQuote; badges: s
         <DroneArt className="w-[76px] h-[52px] shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[19px] font-bold">Hive drone</span>
+            <span className="text-[19px] font-bold">Relay drone</span>
             {q.available && badges.map((b) => <Badge key={b} tone={b === 'Cheapest' ? 'green' : 'blue'}>{b}</Badge>)}
           </div>
           <div className="text-[14px] text-[#545454]">

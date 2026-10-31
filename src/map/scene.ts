@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 import type { LngLat, Pos3 } from '@shared/types';
 import type { CollectPoint } from '@/lib/collect';
+import type { ChargingSite } from '@/lib/stations';
 
 export interface Stop {
   id: string;
@@ -26,6 +27,9 @@ export interface Scene {
   selectedShopId?: string;
   onShop?: (c: CollectPoint) => void;
   drone?: { pos: Pos3; heading: number };
+  /** Coming soon: planned charging sites and the area each one keeps covered. */
+  stations?: ChargingSite[];
+  coverage?: { center: LngLat; radiusM: number }[];
   /** A drone rental's flight area (circle). */
   area?: { center: LngLat; radiusM: number };
   /** No-fly zones to emphasise (the ones a route goes around). */

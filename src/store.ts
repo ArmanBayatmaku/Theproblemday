@@ -33,6 +33,7 @@ interface State {
   recents: Place[];
   view3d: boolean;
   weatherMode: WeatherMode;
+  notifyCharging: boolean;
   // not persisted
   form: OrderForm;
   rentForm: RentForm;
@@ -61,6 +62,7 @@ interface Actions {
   setPayment: (p: State['payment']) => void;
   setView3d: (v: boolean) => void;
   setWeatherMode: (m: WeatherMode) => void;
+  setNotifyCharging: (v: boolean) => void;
   setLiveWeather: (w?: Weather) => void;
 }
 
@@ -78,6 +80,7 @@ export const useApp = create<State & Actions>()(
       recents: [],
       view3d: false,
       weatherMode: 'live',
+      notifyCharging: false,
       form: newForm(DEFAULT_HOME),
       rentForm: newRentForm(DEFAULT_HOME),
 
@@ -154,13 +157,15 @@ export const useApp = create<State & Actions>()(
       setPayment: (payment) => set({ payment }),
       setView3d: (view3d) => set({ view3d }),
       setWeatherMode: (weatherMode) => set({ weatherMode }),
+      setNotifyCharging: (notifyCharging) => set({ notifyCharging }),
       setLiveWeather: (liveWeather) => set({ liveWeather }),
     }),
     {
+      // Storage key kept from the app's earlier name so saved demo bookings survive the rename.
       name: 'hive-app-v2',
       version: 2,
       storage: createJSONStorage(() => localStorage),
-      partialize: (s) => ({ name: s.name, home: s.home, work: s.work, payment: s.payment, orders: s.orders, rentals: s.rentals, recents: s.recents, view3d: s.view3d, weatherMode: s.weatherMode }),
+      partialize: (s) => ({ name: s.name, home: s.home, work: s.work, payment: s.payment, orders: s.orders, rentals: s.rentals, recents: s.recents, view3d: s.view3d, weatherMode: s.weatherMode, notifyCharging: s.notifyCharging }),
       onRehydrateStorage: () => (s) => {
         if (s) {
           s.form = newForm(s.home);

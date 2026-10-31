@@ -94,11 +94,13 @@ export function VanArt({ className }: P) {
   );
 }
 
-export function HiveMark({ className }: P) {
+/** Relay logo: two chevrons passing it on. */
+export function RelayMark({ className }: P) {
   return (
     <svg viewBox="0 0 32 32" className={className} aria-hidden>
-      <path d="M16 2.5 28 9.5v13L16 29.5 4 22.5v-13z" fill="#000" />
-      <path d="M16 10.5 21 13.4v5.2L16 21.5l-5-2.9v-5.2z" fill="#fff" />
+      <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" fill="#000" />
+      <path d="M9.5 9.5 16 16l-6.5 6.5" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16.5 9.5 23 16l-6.5 6.5" fill="none" stroke="#fff" strokeOpacity=".5" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -122,4 +124,8 @@ export const DRONE_ICON_URL = `data:image/svg+xml;charset=utf-8,${encodeURICompo
 
 export const SHOP_SVG = `<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9"/><path d="M3 10 5 4h14l2 6"/><path d="M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M10 20v-5h4v5"/></svg>`;
 
-export const PORT_SVG = `<svg viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2.5 28 9.5v13L16 29.5 4 22.5v-13z" fill="#000"/><path d="M16 10.5 21 13.4v5.2L16 21.5l-5-2.9v-5.2z" fill="#fff"/></svg>`;
+export const PORT_SVG = `<svg viewBox="0 0 32 32" width="100%" height="100%"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" fill="#000"/><path d="M9.5 9.5 16 16l-6.5 6.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 9.5 23 16l-6.5 6.5" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+/** Planned charging sites (Coming soon): a fuel pump and an EV plug. */
+export const FUEL_SVG = `<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h12"/><path d="M4 22V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0V9.83a2 2 0 0 0-.59-1.42L18 5"/><path d="M4 9h10"/></svg>`;
+export const EV_SVG = `<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>`;

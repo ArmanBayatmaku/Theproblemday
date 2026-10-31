@@ -8,7 +8,7 @@ import { droneFlyability } from '@shared/weather';
 import { useApp, useWeather } from '@/store';
 import { useMapScene } from '@/map/scene';
 import { hoursText, openingHours } from '@/lib/collect';
-import { DRONE } from '@/lib/drone';
+import { DRONE, portShort } from '@/lib/drone';
 import { compass, dayLabel, hhmm, mph, money, useNow } from '@/lib/format';
 import { STEPS, isActive, isCollect, live, remaining, stepIndex } from '@/lib/orders';
 import { shortZone } from '@/lib/quotes';
@@ -22,7 +22,7 @@ function headline(o: Order, minutesLeft: number): { title: string; sub: string }
   const m = Math.max(1, Math.ceil(minutesLeft));
   switch (o.phase) {
     case 'scheduled':
-      return { title: 'Scheduled', sub: `The drone leaves ${o.portName.replace('Hive port ', '')} ${dayLabel(o.startAt).toLowerCase()} at ${hhmm(o.startAt)}` };
+      return { title: 'Scheduled', sub: `The drone leaves ${portShort(o.portName)} ${dayLabel(o.startAt).toLowerCase()} at ${hhmm(o.startAt)}` };
     case 'matching':
       return { title: 'Finding your drone…', sub: `Checking the route and weather at ${o.portName}` };
     case 'to_pickup':
@@ -106,7 +106,7 @@ export function Track() {
   const fly = droneFlyability(weather, order.form.fragile ? DRONE.fragileLimits : DRONE.limits);
   const zones = order.avoided.filter((a) => a.kind === 'zone');
   const share = () => {
-    void navigator.clipboard?.writeText(`https://hive.example/t/${order.id.toLowerCase()}`).catch(() => undefined);
+    void navigator.clipboard?.writeText(`https://relay.example/t/${order.id.toLowerCase()}`).catch(() => undefined);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1800);
   };
@@ -222,7 +222,7 @@ export function Track() {
               <div className="text-[15px] font-semibold">
                 {DRONE.model} · {order.drone.id}
               </div>
-              <div className="text-[13px] text-[#6b6b6b]">Remote pilot {order.drone.pilot} · from {order.portName.replace('Hive port ', '')}</div>
+              <div className="text-[13px] text-[#6b6b6b]">Remote pilot {order.drone.pilot} · from {portShort(order.portName)}</div>
             </div>
             <div className="text-right shrink-0">
               <div className="text-[11px] text-[#6b6b6b]">PIN</div>

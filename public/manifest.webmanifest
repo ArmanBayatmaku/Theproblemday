@@ -1,7 +1,7 @@
 {
-  "name": "Hive: drone delivery",
-  "short_name": "Hive",
-  "description": "Drone delivery across London. Send it in minutes, no post office.",
+  "name": "Relay: drone delivery",
+  "short_name": "Relay",
+  "description": "Drone delivery and drone rental across London.",
   "start_url": "/mobile/",
   "scope": "/mobile/",
   "display": "standalone",

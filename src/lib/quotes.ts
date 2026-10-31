@@ -1,4 +1,4 @@
-// Prices. The drone is what Hive books; Waymo, Uber and the others are shown as estimates to compare.
+// Prices. The drone is what Relay books; Waymo, Uber and the others are shown as estimates to compare.
 import type { Flyability, LngLat, Place, PriceLine, Weather } from '@shared/types';
 import { approxRoadRoute, planDroneRoute, roadSpeedKmh, type DronePlan } from '@shared/routing';
 import { DEMO_ZONES, LANDMARKS } from '@shared/data/london';

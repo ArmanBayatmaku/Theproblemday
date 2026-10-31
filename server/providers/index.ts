@@ -12,12 +12,12 @@ export const ADAPTERS: Record<string, ProviderAdapter> = {
 };
 
 /** Demo partners and the internal drone network have no external API. */
-const INTERNAL = new Set(['hive-air']);
+const INTERNAL = new Set(['relay-air']);
 const DEMO = new Set(['thames-express', 'cityhop']);
 
 export function providerStatus() {
   return {
-    'hive-air': { state: 'internal' as const },
+    'relay-air': { state: 'internal' as const },
     ...Object.fromEntries(Object.values(ADAPTERS).map((a) => [a.id, { state: a.configured() ? ('configured' as const) : ('simulated' as const), env: a.env }])),
     'thames-express': { state: 'demo' as const },
     cityhop: { state: 'demo' as const },
@@ -30,7 +30,7 @@ providerRouter.get('/', (_req, res) => res.json(providerStatus()));
 
 providerRouter.post('/:id/:action', async (req, res) => {
   const { id, action } = req.params;
-  if (INTERNAL.has(id)) return res.json({ simulated: false, internal: true, message: 'Hive Air is dispatched by this platform — no external call needed.' });
+  if (INTERNAL.has(id)) return res.json({ simulated: false, internal: true, message: 'Relay drones are dispatched by this platform — no external call needed.' });
   if (DEMO.has(id)) return res.json({ simulated: true, message: `${id} is a fictional demo partner.` });
   const adapter = ADAPTERS[id];
   if (!adapter) return res.status(404).json({ error: `Unknown provider ${id}` });

@@ -5,7 +5,7 @@ import { approxRoadRoute, roadSpeedKmh } from '@shared/routing';
 import { bearingDeg, cumulative, destination, distanceM, pointInZone, positionAlong } from '@shared/geo';
 import { DEMO_ZONES } from '@shared/data/london';
 import { droneFlyability, effectiveWindMs } from '@shared/weather';
-import { DRONE, PORTS, type Port } from './drone';
+import { DRONE, PORTS, portShort, type Port } from './drone';
 import { mph, rng } from './format';
 import { SIM_MS_PER_MIN } from './orders';
 import { shortZone } from './quotes';
@@ -209,7 +209,7 @@ export function quoteRental(f: RentForm, weather: Weather, now: number): RentOpt
   }
 
   const notes: string[] = [];
-  if (!later) notes.push(`Your pilot is about ${travelMin} min away, from ${port.name.replace('Hive port ', '')}`);
+  if (!later) notes.push(`Your pilot is about ${travelMin} min away, from ${portShort(port.name)}`);
   if (fly.status === 'caution') notes.push(`Breezy (${mph(effectiveWindMs(w))} mph at 120 m): the pilot may pause in strong gusts`);
   if (f.purpose === 'event' && (f.eventHours ?? 0) > 2) notes.push('Battery swaps included: the drone lands for a few minutes about every 40 minutes');
   if (f.purpose === 'roof') notes.push('No ladders or scaffolding needed. Stay indoors or well back while the drone flies low.');

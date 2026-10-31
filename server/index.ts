@@ -1,4 +1,4 @@
-// Hive API server. Keeps provider keys off the browser.
+// Relay API server. Keeps provider keys off the browser.
 //   npm run dev   → Vite on :5173 (proxies /api) + this server on :8787
 //   npm run build && npm start → this server also serves the built app
 import 'dotenv/config';
@@ -37,5 +37,5 @@ if (fs.existsSync(path.join(dist, 'index.html'))) {
 
 const port = Number(process.env.PORT) || 8787;
 app.listen(port, () => {
-  console.log(`Hive API on http://localhost:${port}`);
+  console.log(`Relay API on http://localhost:${port}`);
 });

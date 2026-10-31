@@ -35,6 +35,7 @@ export function lightStyle(): StyleSpecification {
       route: { type: 'geojson', data: EMPTY as any },
       approach: { type: 'geojson', data: EMPTY as any },
       area: { type: 'geojson', data: EMPTY as any },
+      coverage: { type: 'geojson', data: EMPTY as any },
     },
     layers: [
       { id: 'bg', type: 'background', paint: { 'background-color': '#f2f2f0' } },
@@ -76,6 +77,9 @@ export function lightStyle(): StyleSpecification {
         source: 'zones',
         paint: { 'line-color': ZONE_RED, 'line-width': ['case', ['get', 'hot'], 2, 1.3], 'line-dasharray': [2, 1.5], 'line-opacity': 0.85 },
       },
+      // ---- coming soon: charging coverage ----
+      { id: 'coverage-fill', type: 'fill', source: 'coverage', paint: { 'fill-color': '#1f8f55', 'fill-opacity': 0.07 } },
+      { id: 'coverage-line', type: 'line', source: 'coverage', paint: { 'line-color': '#1f8f55', 'line-width': 1.2, 'line-opacity': 0.45, 'line-dasharray': [2, 2] } },
       // ---- drone rental flight area ----
       { id: 'area-fill', type: 'fill', source: 'area', paint: { 'fill-color': '#276ef1', 'fill-opacity': 0.1 } },
       { id: 'area-line', type: 'line', source: 'area', paint: { 'line-color': '#276ef1', 'line-width': 2, 'line-dasharray': [1.5, 1.2] } },

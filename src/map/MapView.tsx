@@ -15,7 +15,7 @@ import { useApp, useWeather } from '@/store';
 import { DRONE, PORTS } from '@/lib/drone';
 import { compass, mph } from '@/lib/format';
 import { shortZone } from '@/lib/quotes';
-import { DRONE_ICON_URL, PORT_SVG, SHOP_SVG } from '@/ui/art';
+import { DRONE_ICON_URL, EV_SVG, FUEL_SVG, PORT_SVG, SHOP_SVG } from '@/ui/art';
 import { arrowImage, EMPTY, lightStyle } from './style';
 import { useScene, type Scene } from './scene';
 
@@ -166,7 +166,7 @@ export function MapView({ compact = false }: { compact?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const overlayRef = useRef<MapboxOverlay | null>(null);
-  const setsRef = useRef<Record<'zones' | 'ports' | 'shops' | 'stops', MarkerSet> | null>(null);
+  const setsRef = useRef<Record<'zones' | 'ports' | 'shops' | 'stops' | 'stations', MarkerSet> | null>(null);
   const [ready, setReady] = useState(false);
   const [offline, setOffline] = useState(false);
   const scene = useScene((s) => s.scene);
@@ -231,7 +231,7 @@ export function MapView({ compact = false }: { compact?: boolean }) {
     const overlay = new MapboxOverlay({ interleaved: true, layers: [] });
     map.addControl(overlay as unknown as maplibregl.IControl);
     overlayRef.current = overlay;
-    setsRef.current = { zones: new MarkerSet(map), ports: new MarkerSet(map), shops: new MarkerSet(map), stops: new MarkerSet(map) };
+    setsRef.current = { zones: new MarkerSet(map), ports: new MarkerSet(map), shops: new MarkerSet(map), stops: new MarkerSet(map), stations: new MarkerSet(map) };
 
     let done = false;
     let gotTile = false;
@@ -283,6 +283,18 @@ export function MapView({ compact = false }: { compact?: boolean }) {
     if (!ready || !map || !sets) return;
     setLine(map, 'route', scene.route);
     setLine(map, 'approach', scene.approach);
+    (map.getSource('coverage') as GeoJSONSource | undefined)?.setData({
+      type: 'FeatureCollection',
+      features: (scene.coverage ?? []).map((c) => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [circlePolygon(c.center, c.radiusM)] } })),
+    } as any);
+    sets.stations.sync(
+      (scene.stations ?? []).map((st) => ({
+        id: st.id,
+        position: st.position,
+        sig: st.kind,
+        make: () => el(`<span class="hv-station-ic">${st.kind === 'ev' ? EV_SVG : FUEL_SVG}</span><span class="hv-station-label">${esc(st.name)}</span>`, `hv-station is-${st.kind}`, `${st.kind === 'ev' ? 'EV charging hub' : 'Petrol station'} · ${st.name} (planned)`),
+      })),
+    );
     (map.getSource('area') as GeoJSONSource | undefined)?.setData(
       scene.area ? { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [circlePolygon(scene.area.center, scene.area.radiusM)] } } : (EMPTY as any),
     );

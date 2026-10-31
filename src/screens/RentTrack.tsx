@@ -8,6 +8,7 @@ import { pointInZone } from '@shared/geo';
 import { DEMO_ZONES } from '@shared/data/london';
 import { useApp } from '@/store';
 import { useMapScene } from '@/map/scene';
+import { portShort } from '@/lib/drone';
 import { dayLabel, hhmm, money, pounds, rng, useNow } from '@/lib/format';
 import { PACKAGE_TITLE, PURPOSES, durationLabel, flightArea, liveRental, orbitPath, rentalActive, rentalTitle, type Rental } from '@/lib/rental';
 import { Btn, Note, TopBar } from '@/ui/kit';
@@ -85,7 +86,7 @@ export function RentTrack() {
   const step = stepIndex(r);
   const quoting = r.phase === 'quote' || r.phase === 'quoted';
   const share = () => {
-    void navigator.clipboard?.writeText(`https://hive.example/r/${r.id.toLowerCase()}`).catch(() => undefined);
+    void navigator.clipboard?.writeText(`https://relay.example/r/${r.id.toLowerCase()}`).catch(() => undefined);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1800);
   };
@@ -191,7 +192,7 @@ export function RentTrack() {
                   {r.pilot.name} · ★ {r.pilot.rating}
                 </div>
                 <div className="text-[13px] text-[#6b6b6b]">
-                  {PACKAGE_TITLE[r.pkg]} · drone {r.droneId} · from {r.portName.replace('Hive port ', '')}
+                  {PACKAGE_TITLE[r.pkg]} · drone {r.droneId} · from {portShort(r.portName)}
                 </div>
               </div>
               <div className="text-right shrink-0">

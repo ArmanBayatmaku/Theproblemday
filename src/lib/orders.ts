@@ -1,4 +1,4 @@
-// Simulated drone deliveries: dispatch from a Hive port, pick up, fly around no-fly zones, drop off.
+// Simulated drone deliveries: dispatch from a Relay port, pick up, fly around no-fly zones, drop off.
 import type { Pos3 } from '@shared/types';
 import { bearingDeg, cumulative, positionAlong } from '@shared/geo';
 import { collectCode } from './collect';

@@ -5,12 +5,13 @@ import { fetchLondonWeather } from '@/lib/weather';
 import { hhmm, useNow } from '@/lib/format';
 import { useApp } from '@/store';
 import { Shell, useMedia } from '@/ui/Shell';
-import { HiveMark } from '@/ui/art';
+import { RelayMark } from '@/ui/art';
 import { Home } from '@/screens/Home';
 import { Send } from '@/screens/Send';
 import { Rent } from '@/screens/Rent';
 import { RentOptions } from '@/screens/RentOptions';
 import { RentTrack } from '@/screens/RentTrack';
+import { ComingSoon } from '@/screens/ComingSoon';
 import { Prices } from '@/screens/Prices';
 import { Track } from '@/screens/Track';
 import { Activity } from '@/screens/Activity';
@@ -42,6 +43,7 @@ function AppRoutes({ phone }: { phone?: boolean }) {
           <Route path="/rent" element={<Rent />} />
           <Route path="/rent/options" element={<RentOptions />} />
           <Route path="/rental/:id" element={<RentTrack />} />
+          <Route path="/coming-soon" element={<ComingSoon />} />
           <Route path="/activity" element={<Activity />} />
           <Route path="/account" element={<Account />} />
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -107,8 +109,8 @@ function PhoneFrame({ children }: { children: ReactNode }) {
     <div className="min-h-full w-full bg-[#ebebe9] flex items-center justify-center gap-16 px-8 py-4">
       <aside className="hidden lg:block max-w-[380px]">
         <div className="flex items-center gap-2">
-          <HiveMark className="w-9 h-9" />
-          <span className="text-[30px] font-extrabold tracking-[-0.04em]">Hive</span>
+          <RelayMark className="w-9 h-9" />
+          <span className="text-[30px] font-extrabold tracking-[-0.04em]">Relay</span>
         </div>
         <h1 className="mt-6 text-[40px] leading-[1.08] font-bold tracking-[-0.025em]">Drone delivery across London. No post office.</h1>
         <p className="mt-4 text-[17px] text-[#5e5e5e] leading-relaxed">

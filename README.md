@@ -1,9 +1,11 @@
-# Hive — drone delivery and drone rental across London
+# Relay — drone delivery and drone rental across London
 
 Two things, one app:
 
-- **Send a parcel** across London by drone in minutes: no post office, no queue. Hive shows what Waymo, Uber and other couriers would charge for the same trip, so you can see how the drone compares.
+- **Send a parcel** across London by drone in minutes: no post office, no queue. Relay shows what Waymo, Uber and other couriers would charge for the same trip, so you can see how the drone compares.
 - **Drone rental**: a licensed pilot comes to you with a drone for aerial photos, events or a roof and gutter check. For anything else, you describe the job and get a personalised quote.
+
+**Coming soon: charging stations.** We will have charging stations for our drones at petrol stations and EV charging stations, so that the drones will be ready to deploy whenever needed in the city.
 
 Built for *the PROBLEM day* hackathon (31 Oct 2026). Branch `Arman-Mobile`: the people-first delivery app. The earlier operations dashboard (own fleets, warehouses, control panel) is still on `main`.
 
@@ -40,8 +42,8 @@ One simple flow, the same on the website and the phone:
 3. **How big is it?** Pocket (up to 300 g), Shoebox (up to 2 kg) or **Custom**. With Custom you enter length, width, height and weight, and a fit check compares each side with the drone's payload bay (45 × 35 × 25 cm, 5 kg), turned whichever way fits best.
 4. **Fragile.** The drone flies slower and won't take off in gusty air, so deliveries might take longer. The form says so under the toggle.
 5. **When.** Now, or a time slot today, tomorrow or the day after.
-6. **Prices.** The Hive drone is the option you book: price, arrival time, how much you save, and the route notes. **Waymo, Uber Courier, a cargo bike and a courier van** are shown underneath as estimates to compare.
-7. **Track it live.** The drone flies from its Hive port to you, picks up, and flies to the drop-off or shop. You get a PIN, a share link and a collection code. Demo time runs about 24× faster, and "Demo: skip ahead" jumps to the next step.
+6. **Prices.** The Relay drone is the option you book: price, arrival time, how much you save, and the route notes. **Waymo, Uber Courier, a cargo bike and a courier van** are shown underneath as estimates to compare.
+7. **Track it live.** The drone flies from its Relay port to you, picks up, and flies to the drop-off or shop. You get a PIN, a share link and a collection code. Demo time runs about 24× faster, and "Demo: skip ahead" jumps to the next step.
 
 ### Drone rental
 
@@ -55,6 +57,10 @@ One simple flow, the same on the website and the phone:
    - **Drone + pilot**: a licensed pilot flies for you.
    - **Pro**: a senior pilot, 4K kit and editing. On a roof check, Pro adds a thermal camera and a written report.
 4. **Track it**: the pilot travels to you, runs safety checks, and the drone circles the spot (at its real height in 3D). At the end you get the photos and video, the event film, or a roof report listing what was found.
+
+### Coming soon: charging stations
+
+A "Coming soon" page (in the top bar, and linked from Home) explains the plan: landing and charging pads on petrol station canopies and at EV charging hubs, so a charged drone is always nearby. The map shows 24 planned sites (12 petrol stations, 12 EV hubs, illustrative) with the area each would cover, and you can ask to be notified at launch.
 
 ### The map (2D and 3D)
 
@@ -71,8 +77,9 @@ One simple flow, the same on the website and the phone:
 4. Try **"Canary Wharf"**: the drop-off is inside a zone. Use "Collect from a shop outside the zone".
 5. **Home → Event filming**: "See options" stays disabled until you pick the event length. Pick 3 h, choose **Pro**, book, skip ahead, and watch the drone circle in **3D**.
 6. **Home → Something else?**: describe a job, then **Request a quote**. The quote arrives a few seconds later; accept it.
-7. **Account → Demo controls → Storm**: drones are grounded. (If real London wind grounds them during a demo, pick **Calm**.)
-8. Open **/mobile/** for the phone version.
+7. **Coming soon**: the planned charging sites at petrol stations and EV hubs, with their coverage on the map.
+8. **Account → Demo controls → Storm**: drones are grounded. (If real London wind grounds them during a demo, pick **Calm**.)
+9. Open **/mobile/** for the phone version.
 
 ## Architecture
 
@@ -81,14 +88,15 @@ src/                       React 19 + Vite + Tailwind 4 (one app, two entry poin
   main.tsx / phone.tsx     website (/) and phone app (/mobile/)
   App.tsx                  routes, background work (weather, order ticks), phone frame
   store.ts                 zustand store (persisted): form, orders, saved places, settings
-  screens/                 Home, Send, Prices, Track (delivery), Rent, RentOptions, RentTrack (rental), Activity, Account
+  screens/                 Home, Send, Prices, Track (delivery), Rent, RentOptions, RentTrack (rental), ComingSoon, Activity, Account
   map/                     MapView (MapLibre + deck.gl), light style, scene store
   lib/
     quotes.ts              drone price + comparison estimates
-    drone.ts               aircraft limits, payload bay, fit check, Hive ports
+    drone.ts               aircraft limits, payload bay, fit check, Relay ports
     collect.ts             partner shops near a drop-off (demo data)
     orders.ts              delivery simulation (dispatch → pickup → flight → drop-off)
     rental.ts              drone rental: purposes, packages, prices, personalised quotes, pilot + flight simulation
+    stations.ts            Coming soon: planned charging sites at petrol stations and EV hubs (demo)
     weather.ts geocode.ts  Open-Meteo, London places + postcodes.io
   ui/                      Shell (website vs phone layout), kit, art, PlacePicker, WhenPicker
 shared/                    code used by both web and server
@@ -112,8 +120,9 @@ Waymo doesn't offer a public self-serve delivery API; its London launch is a rid
 ## Data & assumptions
 
 - **No-fly zones are illustrative (demo only):** approximate airport FRZs, restricted areas, prisons, Royal Parks, a heliport and a temporary event zone. Real flights need NATS/CAA data, permissions and a qualified operator. Never use this for real flight planning.
-- **The drone** (Hive Skylift H5) is fictional: 45 × 35 × 25 cm bay, 5 kg, 55 km/h cruise (38 km/h fragile), wind limit 12 m/s (10.5 m/s fragile), 28 km range, 90 m cruise height.
+- **The drone** (Relay Skylift H5) is fictional: 45 × 35 × 25 cm bay, 5 kg, 55 km/h cruise (38 km/h fragile), wind limit 12 m/s (10.5 m/s fragile), 28 km range, 90 m cruise height.
 - **Partner shops** are generated near the drop-off with made-up names; closed shops can't be picked.
+- **Charging sites** (Coming soon) are planned, illustrative locations on main roads; no real petrol station or charging network is involved.
 - **Comparison prices** are estimates from typical fares. Uber's courier limit follows its published small-item rules (~15 lb / 6.8 kg). CityHop and Thames Express are fictional.
 - **Weather** comes from Open-Meteo (free for non-commercial use) and is simulated offline. Account → Demo controls overrides it.
 - Pilots, quotes, results (photos, films, roof reports), drones, tracking links and payments are simulated.

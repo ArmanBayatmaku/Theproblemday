@@ -1,13 +1,13 @@
-// Home: the two things Hive does — send a parcel by drone, or rent a drone with a pilot.
+// Home: the two things Relay does — send a parcel by drone, or rent a drone with a pilot.
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
-import { ArrowRight, Camera, ChevronRight, House, PartyPopper, Sparkles, Store } from 'lucide-react';
+import { ArrowRight, Camera, ChevronRight, House, PartyPopper, Sparkles, Store, Zap } from 'lucide-react';
 import { useApp } from '@/store';
 import { useMapScene } from '@/map/scene';
 import { useNow } from '@/lib/format';
 import type { RentPurpose } from '@/lib/rental';
-import { Section } from '@/ui/kit';
+import { Badge, Section } from '@/ui/kit';
 import { DroneArt } from '@/ui/art';
 import { useLayout } from '@/ui/Shell';
 import { ActivityRow, itemActive, useItems } from './Activity';
@@ -48,6 +48,22 @@ export function Home() {
       <div className="px-5 mt-4 grid grid-cols-2 gap-3">
         <ServiceCard title="Send a parcel" text="By drone, across London in minutes" art={<DroneArt className="w-[84px] h-[58px]" />} onClick={() => nav('/send')} />
         <ServiceCard title="Drone rental" text="With a pilot: aerial views, events, roof checks" art={<DroneArt camera className="w-[84px] h-[58px]" />} onClick={() => nav('/rent')} />
+      </div>
+
+      <div className="px-5 mt-3">
+        <button type="button" onClick={() => nav('/coming-soon')} className="w-full flex items-center gap-3 rounded-2xl border border-[#e2e2e2] px-4 py-3 text-left hover:border-[#bdbdbd]">
+          <span className="w-10 h-10 rounded-full bg-[#e6f4ec] text-[#1f8f55] grid place-items-center shrink-0">
+            <Zap size={19} />
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              <span className="text-[15px] font-semibold whitespace-nowrap">Charging stations</span>
+              <Badge tone="green">Coming soon</Badge>
+            </span>
+            <span className="block text-[13px] text-[#6b6b6b] leading-snug">Drones charging at petrol stations and EV hubs, ready across the city</span>
+          </span>
+          <ChevronRight size={18} className="text-[#a6a6a6] shrink-0" />
+        </button>
       </div>
 
       {active.length > 0 && (

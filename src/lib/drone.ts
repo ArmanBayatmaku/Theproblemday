@@ -1,8 +1,8 @@
-// The Hive drone network: aircraft limits, drone ports and the payload-bay fit check.
+// The Relay drone network: aircraft limits, drone ports and the payload-bay fit check.
 import type { LngLat } from '@shared/types';
 
 export const DRONE = {
-  model: 'Hive Skylift H5',
+  model: 'Relay Skylift H5',
   /** Inside of the payload box (cm). */
   bay: { l: 45, w: 35, h: 25 },
   maxKg: 5,
@@ -21,12 +21,15 @@ export interface Port {
 }
 
 export const PORTS: Port[] = [
-  { id: 'P-CAM', name: 'Hive port Camden', position: [-0.13, 51.539] },
-  { id: 'P-NE', name: 'Hive port Nine Elms', position: [-0.1335, 51.4818] },
-  { id: 'P-BER', name: 'Hive port Bermondsey', position: [-0.0595, 51.493] },
-  { id: 'P-STR', name: 'Hive port Stratford', position: [-0.0005, 51.5375] },
-  { id: 'P-WC', name: 'Hive port White City', position: [-0.2265, 51.5095] },
+  { id: 'P-CAM', name: 'Relay port Camden', position: [-0.13, 51.539] },
+  { id: 'P-NE', name: 'Relay port Nine Elms', position: [-0.1335, 51.4818] },
+  { id: 'P-BER', name: 'Relay port Bermondsey', position: [-0.0595, 51.493] },
+  { id: 'P-STR', name: 'Relay port Stratford', position: [-0.0005, 51.5375] },
+  { id: 'P-WC', name: 'Relay port White City', position: [-0.2265, 51.5095] },
 ];
+
+/** "Relay port Camden" → "Camden" (also handles bookings saved under the app's earlier name). */
+export const portShort = (name: string) => name.replace(/^(Relay|Hive) port /, '');
 
 export type SizeId = 'pocket' | 'shoebox' | 'custom';
 

@@ -5,7 +5,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { Smartphone } from 'lucide-react';
 import { MapView } from '@/map/MapView';
-import { HiveMark } from './art';
+import { RelayMark } from './art';
 import { TabBar, useActiveCount } from './kit';
 import { OverlayRoot } from './PlacePicker';
 
@@ -45,6 +45,7 @@ const DESKTOP_NAV: { to: string; label: string; match: (p: string) => boolean }[
   { to: '/send', label: 'Send', match: (p) => p === '/send' || p === '/prices' || p.startsWith('/order/') },
   { to: '/rent', label: 'Drone rental', match: (p) => p.startsWith('/rent') },
   { to: '/activity', label: 'Activity', match: (p) => p === '/activity' },
+  { to: '/coming-soon', label: 'Coming soon', match: (p) => p === '/coming-soon' },
 ];
 
 function Desktop() {
@@ -56,8 +57,8 @@ function Desktop() {
     <div className="h-full flex flex-col bg-white">
       <header className="h-16 shrink-0 flex items-center gap-8 px-6 border-b border-[#eeeeee] relative z-30 bg-white">
         <NavLink to="/" className="flex items-center gap-2">
-          <HiveMark className="w-8 h-8" />
-          <span className="text-[24px] font-extrabold tracking-[-0.04em]">Hive</span>
+          <RelayMark className="w-8 h-8" />
+          <span className="text-[24px] font-extrabold tracking-[-0.04em]">Relay</span>
         </NavLink>
         <nav className="flex items-center gap-1">
           {DESKTOP_NAV.map((t) => {
@@ -99,7 +100,7 @@ function Desktop() {
 /** How much of the phone screen the map takes, per screen. */
 function mapHeight(path: string) {
   if (path.startsWith('/order/') || path.startsWith('/rental/')) return '48%';
-  if (path.startsWith('/prices') || path === '/rent/options') return '40%';
+  if (path.startsWith('/prices') || path === '/rent/options' || path === '/coming-soon') return '40%';
   if (path === '/send') return '38%';
   if (path === '/rent') return '34%';
   if (path === '/') return '28%';

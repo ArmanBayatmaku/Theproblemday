@@ -1,8 +1,8 @@
 {
-  "name": "hive-drone-delivery",
+  "name": "relay-drone-delivery",
   "private": true,
   "version": "0.1.0",
-  "description": "Hive \u2014 drone delivery across London, with Waymo/Uber price comparison (The Problem Day hackathon)",
+  "description": "Relay \u2014 drone delivery and drone rental across London (The Problem Day hackathon)",
   "type": "module",
   "engines": {
     "node": ">=20.19"
