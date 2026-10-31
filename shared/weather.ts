@@ -1,4 +1,4 @@
-import type { AssetSpecs, Flyability, Weather, WeatherHour } from './types';
+import type { FlightLimits, Flyability, Weather, WeatherHour } from './types';
 
 export function weatherSummary(code: number): string {
   if (code === 0) return 'Clear';
@@ -60,7 +60,7 @@ export function effectiveWindMs(w: Weather): number {
   return Math.max(w.windMs120, w.gustMs * 0.85);
 }
 
-export function droneFlyability(w: Weather, specs: Pick<AssetSpecs, 'maxWindMs' | 'tempMinC' | 'tempMaxC' | 'ipRating'>): {
+export function droneFlyability(w: Weather, specs: FlightLimits): {
   status: Flyability;
   reasons: string[];
 } {

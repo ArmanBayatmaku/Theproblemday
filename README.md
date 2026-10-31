@@ -1,8 +1,8 @@
-# HIVE — Autonomous Operations, London
+# Hive — drone delivery across London
 
-One dashboard to **price, book, plan and control every way of moving goods around London**: Hive drones, Waymo robotaxis, couriers, partner vans and cargo bikes, and a company's **own fleet** — vans, trucks, drivers, humanoid robots, warehouse AMRs, sidewalk robots and robot arms.
+Send something across London by drone in minutes: no post office, no queue. Hive shows what Waymo, Uber and other couriers would charge for the same trip, so you can see how the drone compares.
 
-Built for *the PROBLEM day* hackathon (31 Oct 2026).
+Built for *the PROBLEM day* hackathon (31 Oct 2026). Branch `Arman-Mobile`: the people-first delivery app. The earlier operations dashboard (own fleets, warehouses, control panel) is still on `main`.
 
 ---
 
@@ -10,101 +10,75 @@ Built for *the PROBLEM day* hackathon (31 Oct 2026).
 
 ```bash
 npm install
-npm run dev          # web app on http://localhost:5173 + API server on :8787
+npm run dev          # website on http://localhost:5173 + API server on :8787
 ```
 
-Requires Node 20.19+ (Node 22 recommended). Everything works with **no keys at all** — providers, devices and weather fall back to a built-in simulation. To switch real services on, copy `.env.example` to `.env` and fill in what you have (see *Connecting real services*).
-
-Production build: `npm run build && npm start` (the API server then also serves the app on :8787).
-
-**Two apps in one repo**
-
-| URL | For |
+| URL | What you get |
 |---|---|
-| http://localhost:5173/ | **Operations dashboard** for companies running fleets |
-| http://localhost:5173/mobile/ | **Hive consumer app**, a mobile app for people (shown inside a phone frame on a laptop) |
+| http://localhost:5173/ | **Website**: booking panel on the left, big map on the right |
+| http://localhost:5173/mobile/ | **Phone app**: the same app laid out for a phone (shown in a phone frame on a laptop) |
 
-To try the consumer app on your phone, run `npm run dev:phone` and open the "Network" address Vite prints, plus `/mobile/`, on a phone on the same Wi-Fi. It can be added to the home screen like an app.
+To try it on a real phone, run `npm run dev:phone` and open the "Network" address Vite prints, plus `/mobile/`, on a phone on the same Wi-Fi. It can be added to the home screen like an app.
 
-## What's in it
+Requires Node 20.19+ (Node 22 recommended). Everything works with **no keys at all**. Production build: `npm run build && npm start` (the API server then serves the app on :8787).
 
-| Page | What it does |
-|---|---|
-| **Overview** | Live KPIs, a London map with machines on jobs coloured by time-to-drop-off, fleet status, deliveries per hour, delivery mix, airspace & weather. |
-| **Live Map** | Every machine and vehicle in London. **2D / 3D** (3D buildings + skyline, extruded no-fly zones, drone altitude stalks, wind field), drone-ops panel (wind at 120 m, gusts, GO / CAUTION / NO-GO per model), layer toggles, fly-to presets. Select machines by **Shift-drag box**, click, or the list on the left; command them from the right panel. |
-| **Request Job** | Chat with the **assistant** or fill the form — they stay in sync. One-off, scheduled or **repeating** jobs. Every method is priced side by side, Uber-style (drone, Waymo, courier, partner van, cargo bike, each of your own vehicles) with badges (cheapest / fastest / greenest / best match) and a **“your fleet vs marketplace”** comparison that includes driver time, fuel/charging, wear, Congestion Charge and ULEZ. |
-| **Jobs** | Active, scheduled, recurring and completed jobs; detail drawer with route map, timeline, change method, duplicate, cancel / stop series. |
-| **Fleet** | Registry of machines, people and locations. Register any machine (drone, van, truck, car, robotaxi, cargo bike, humanoid, AMR, sidewalk robot, robot arm) with specs, compliance and connection protocol. Bulk-assign machines to locations, assign drivers/pilots. |
-| **Locations** | Warehouses, stores, depots, drone ports and charging hubs, each with its machines, a **warehouse floor view** (which robot is in which zone doing what), tasks and deliveries in/out. |
-| **Machine Tasks** | Give machines work **in a time window, before or after a delivery, between two deliveries, or whenever idle**, optionally repeating. Timeline of tasks and deliveries per machine. Fleet-wide automations (auto-charge, weather fallback, return home, fill idle time, airspace guard). |
-| **Control Panel** | Control anything registered: pause/resume/hold, return to base, go-to, take off/land, **E-STOP** (with hold-to-confirm for the global one), charge, payload bay, lights/horn, sleep/wake, reboot, firmware, speed limits, reassignment, driver messages, cancel provider trips. **Playbooks** (storm protocol, ground all drones, recall, night mode…), live telemetry and a full command audit log. Natural-language commands too: “return all drones at Nine Elms”. |
-| **Integrations** | Status and test buttons for providers, device adapters, AI and data feeds. |
-| **Settings** | Own-fleet cost model, simulation speed, weather override (calm / breezy / storm to demo drone groundings), demo reset. |
+## How it works
 
-### Hive consumer app (`/mobile/`)
+One simple flow, the same on the website and the phone:
 
-An Uber-style app for individuals, not businesses. Pick what you need, see every option priced side by side (drone, Waymo, courier, cargo bike, van), choose one and track it live.
+1. **Where from, where to.** Home is pre-filled; search any London area or UK postcode.
+2. **How should it arrive?**
+   - **To the door**: the drone hovers and lowers the parcel on a line.
+   - **Collect**: a nearby partner shop (corner shop, newsagent, pharmacy…) takes it from the drone and holds it for 3 days. You pick it up later with a code. The shops show on the map and in a list (walk time, opening hours), and it's £1 cheaper.
+3. **How big is it?** Pocket (up to 300 g), Shoebox (up to 2 kg) or **Custom**. With Custom you enter length, width, height and weight, and a fit check compares each side with the drone's payload bay (45 × 35 × 25 cm, 5 kg), turned whichever way fits best.
+4. **Fragile.** The drone flies slower and won't take off in gusty air, so deliveries might take longer. The form says so under the toggle.
+5. **When.** Now, or a time slot today, tomorrow or the day after.
+6. **Prices.** The Hive drone is the option you book: price, arrival time, how much you save, and the route notes. **Waymo, Uber Courier, a cargo bike and a courier van** are shown underneath as estimates to compare.
+7. **Track it live.** The drone flies from its Hive port to you, picks up, and flies to the drop-off or shop. You get a PIN, a share link and a collection code. Demo time runs about 24× faster, and "Demo: skip ahead" jumps to the next step.
 
-| Service | What it does |
-|---|---|
-| **Send** | Get something to anyone in London. |
-| **Sold it?** | Sold something online? We collect from your door and deliver it to the buyer, so there's no post office trip. The buyer can pay for delivery through a link and gets live tracking by text. |
-| **Collect** | Bought something secondhand? We pick it up from the seller. You can also have the courier send photos first so you can approve the item before it's collected. |
-| **Return** | Return an online order to a parcel locker, drop-off shop or the retailer, and optionally have the label printed for you. |
-| **Errand** | Keys, a prescription or a forgotten charger. We pick it up, and can buy it for you. |
-| **Move** | A sofa, a bike or boxes, with a van and 0–2 helpers. |
-| **Ride** | Go yourself in a driverless Waymo or an Uber. |
-| **Drone shot** | Aerial photos, a short film or a roof check by a licensed pilot. It checks no-fly zones and wind first. |
+### The map (2D and 3D)
 
-Type what you need ("sold my jacket, buyer is in Hackney") and the app picks the service and fills in the details. Deliveries use the same quote engine as the dashboard (`shared/pricing.ts`); rides and drone shoots have their own simple fare models (`src/mobile/quotes.ts`). Tracking is simulated at demo speed, and "Demo: skip ahead" jumps to the next step.
+- **No-fly zones (demo only)**: airports, restricted areas, prisons, Royal Parks, a heliport and an event zone, drawn in red and labelled. In 3D they are red volumes.
+- **Routes go around them.** The flight line is the shortest path that stays outside every zone (plus a safety margin) and away from tall buildings. Pickups or drop-offs *inside* a zone are refused, and the app offers to deliver to a shop outside the zone instead.
+- **Wind and weather**: arrows show the wind direction across the map, and a chip shows wind, gusts and whether drones can fly. Too windy grounds the drone; breezy slows it down.
+- **3D**: tilted view, 3D buildings (OpenFreeMap when online; a bundled skyline offline), with the flight line and live drone drawn at their real flying height (90 m).
 
-`⌘K` / `Ctrl K` opens a command palette: jump anywhere, find any machine/job/location, or type a command or a delivery request.
+## Demo script (2 minutes)
 
-## Demo script (3 minutes)
-
-1. **Overview** — “this is London right now”: jobs in flight, on-time rate, drone weather status.
-2. **Request Job** → click *“30 kg of catering from Shoreditch store to Bank now”* — Waymo, a cargo bike and a partner van are priced next to your own vans, and the *your fleet vs marketplace* card shows what your van really costs once driver time, charging, wear and London charges are counted.
-3. Try *“2 kg parcel from Kensington store to Notting Hill now”* → drone vs Waymo vs Uber vs your sidewalk robot. Say **“book it”**. Then *“6 pallets chilled from Park Royal warehouse to King's Cross store tomorrow at 7am”* — everything that can't carry 1.5 t of chilled goods drops out with a reason, leaving your refrigerated truck.
-4. **Live Map** → 3D → the City skyline, no-fly cylinders, drones flying around them. Settings → weather **Storm** → drones go NO-GO and waiting drone jobs are automatically re-booked by road.
-5. **Control Panel** → select all drones → *Return to base*, or run the **Storm protocol** playbook. Show the audit log.
-6. **Locations** → Park Royal DC → floor view; **Machine Tasks** → “load TR-01 10 min before J-1003 leaves”.
+1. Website → **Deliver to "Paddington"**: the line bends around Regent's Park (demo no-fly zone).
+2. **Collect** → pick a shop on the map. **Custom size** 50 × 30 × 20 cm → "Too big for the drone"; change 50 to 40 → "It fits". Turn **Fragile** on.
+3. **See prices**: the drone against Waymo and Uber. Switch to **3D**, **Book drone**, then "Demo: skip ahead" → **Ready to collect** with a code.
+4. Try **"Canary Wharf"**: the drop-off is inside a zone. Use "Collect from a shop outside the zone".
+5. **Account → Demo controls → Storm**: drones are grounded. (If real London wind grounds them during a demo, pick **Calm**.)
+6. Open **/mobile/** for the phone version.
 
 ## Architecture
 
 ```
-src/                     React 19 + Vite + Tailwind 4 web app
-  pages/                 Overview, LiveMap, RequestJob, Jobs, Fleet(+Locations), Tasks, ControlPanel, Integrations, Settings
-  components/map/        MapLibre GL + deck.gl (FleetMap, layers, dark styles, offline fallback)
-  store/useStore.ts      zustand store (persisted to localStorage) — the single source of truth
-  sim/                   simulation engine: dispatch, movement, tasks, automations, demo traffic
-  integrations/
-    assistant.ts         chat → intent (Claude via the API server, or the offline parser) → draft/quotes/booking/commands
-    devices/             capabilities per machine type, protocol translations, simulator (digital twin)
-    weather.ts           Open-Meteo (wind at 10/80/120 m, gusts, rain, visibility)
-    geocode.ts           sites + London places + postcodes.io
-  mobile/                Hive consumer app (screens, light map, consumer pricing, order simulation)
-shared/                  code used by both web and server
-  types.ts               domain model
-  pricing.ts             quote engine for every provider + own-fleet costing + ranking
-  routing.ts             drone routes around no-fly zones and tall buildings; road approximations
-  parser.ts              offline natural-language parser (jobs, timing, recurrence, cargo, commands)
-  schedule.ts            recurrence rules (daily / weekdays / specific days / hourly / monthly)
-  providers.ts           marketplace provider catalogue
-  data/london.ts         London places, tall buildings, demo airspace, congestion zone
-server/                  Express 5 API (keeps keys off the browser)
-  ai/assistant.ts        Claude tool-use intent extraction
-  providers/             adapter contract + Uber Direct + Waymo (partner) adapters
-  devices/               MAVLink / ROS 2 / VDA 5050 / vendor / MQTT bridge slots
+src/                       React 19 + Vite + Tailwind 4 (one app, two entry points)
+  main.tsx / phone.tsx     website (/) and phone app (/mobile/)
+  App.tsx                  routes, background work (weather, order ticks), phone frame
+  store.ts                 zustand store (persisted): form, orders, saved places, settings
+  screens/                 Send, Prices, Track, Activity, Account
+  map/                     MapView (MapLibre + deck.gl), light style, scene store
+  lib/
+    quotes.ts              drone price + comparison estimates
+    drone.ts               aircraft limits, payload bay, fit check, Hive ports
+    collect.ts             partner shops near a drop-off (demo data)
+    orders.ts              delivery simulation (dispatch → pickup → flight → drop-off)
+    weather.ts geocode.ts  Open-Meteo, London places + postcodes.io
+  ui/                      Shell (website vs phone layout), kit, art, PlacePicker
+shared/                    code used by both web and server
+  routing.ts               drone route planner (visibility graph around zones and tall buildings)
+  geo.ts weather.ts        geometry, flyability (wind, gusts, rain, temperature)
+  data/london.ts           London places, tall buildings, demo airspace
+server/                    Express 5 API (keeps keys off the browser)
+  providers/               adapter contract + Uber Direct + Waymo (partner): prepared, not connected
 ```
-
-The browser runs a **digital twin**: machines move along routes, jobs dispatch, tasks run, batteries drain and charge. The sim clock runs ×4 by default (change it from the clock in the top bar).
 
 ## Connecting real services
 
-Nothing below is required for the demo.
-
-### Claude (assistant)
-Set `ANTHROPIC_API_KEY` (and optionally `ANTHROPIC_MODEL`, default `claude-sonnet-5-5`). The server sends the message, the current draft, your sites and machine ids to Claude with a single forced tool (`interpret_request`) and returns a structured intent. **Prices are always calculated by the app**, never by the model. Without a key the offline parser handles the same intents.
+Nothing below is needed for the demo. Comparison prices are estimates until a provider is connected.
 
 ### Uber (Uber Direct)
 `server/providers/uber-direct.ts` implements quote → deliver → cancel → status against the Uber Direct API (OAuth client credentials with the `eats.deliveries` scope; `POST /v1/customers/{customer_id}/delivery_quotes` and `/deliveries`). Add `UBER_DIRECT_CLIENT_ID`, `UBER_DIRECT_CLIENT_SECRET` and `UBER_DIRECT_CUSTOMER_ID` from the Direct dashboard (account approval may be needed) and check the field mapping against the docs for your account.
@@ -112,38 +86,11 @@ Set `ANTHROPIC_API_KEY` (and optionally `ANTHROPIC_MODEL`, default `claude-sonne
 ### Waymo
 Waymo doesn't offer a public self-serve delivery API; its London launch is a ride-hailing service. `server/providers/waymo.ts` has the same contract with placeholder calls, ready for a partner API (`WAYMO_PARTNER_API_KEY`, `WAYMO_PARTNER_BASE_URL`).
 
-### Another courier
-Add a file in `server/providers/` implementing `ProviderAdapter` (quote, book, cancel, status), register it in `server/providers/index.ts` and add it to `shared/providers.ts` + `ROAD_PROVIDERS` in `shared/pricing.ts`.
-
-### Real machines
-Each machine has a `protocol` and `endpoint`. Commands are translated per protocol (see `src/integrations/devices/capabilities.ts` → `protocolMessage`, and `server/devices/index.ts`):
-
-| Protocol | For | Bridge |
-|---|---|---|
-| MAVLink | PX4 / ArduPilot drones | `MAVLINK_BRIDGE_URL` (MAVSDK server / mavlink2rest) — `MAV_CMD_NAV_RETURN_TO_LAUNCH`, `MAV_CMD_DO_REPOSITION`, `MAV_CMD_DO_PAUSE_CONTINUE`… |
-| ROS 2 | humanoids, sidewalk robots, arms | `ROSBRIDGE_URL` (rosbridge_suite) — Nav2 `NavigateToPose`, pause/resume services, latched e-stop topic |
-| VDA 5050 | warehouse AMRs / AGVs | `VDA5050_MQTT_URL` — orders and instantActions (`startPause`, `stopPause`, `cancelOrder`) |
-| Vendor API | vans, trucks (telematics / driver app) | `VENDOR_API_BASE_URL` |
-| MQTT | anything custom | `DEVICE_MQTT_URL` — `devices/<id>/cmd`, `devices/<id>/state` |
-
-Until a bridge is connected, commands run on the digital twin and the audit log says so (“via MAVLink bridge (not connected → simulated)”). Hardware E-STOPs must always remain the primary safety system.
-
 ## Data & assumptions
 
-- **Airspace is illustrative** (approximate Heathrow / London City FRZs, RAF Northolt, a heliport, prisons, Royal Parks, a temporary event zone). Real flights need NATS / CAA data, permissions and a qualified operator. Never use this for real flight planning.
-- Tall buildings for the skyline are approximate positions/heights; real 3D buildings come from OpenFreeMap (OpenStreetMap) tiles when online. Offline, a bundled borough map is used.
-- London charges in the cost model: Congestion Charge **£18/day** (electric vans **£9** with Auto Pay; Mon–Fri 07:00–18:00, Sat–Sun 12:00–18:00), ULEZ **£12.50/day** for non-compliant vehicles. Check TfL before relying on them; they're editable in Settings.
-- Uber courier limits follow Uber's published small-item rules (~15 lb / 6.8 kg, under £200). Thames Express and CityHop are **fictional** demo partners.
-- Weather: Open-Meteo (free for non-commercial use); simulated when offline.
-
-## Ideas for what's next
-
-- Real-time multi-drop route optimisation (VRP) across own fleet + marketplace, and batching small orders onto one drone/robot run.
-- Drone corridors & NOTAM ingestion, Remote ID broadcast monitor, and a pilot hand-over console (one pilot supervising many drones).
-- Infrastructure inspection jobs (power lines, rooftops, rail) booked like deliveries, with the drone patrol flown automatically.
-- Proof of delivery (photos, PIN, signature) and customer tracking links.
-- Battery-swap scheduling, charger reservations and energy-price-aware charging.
-- Live video tiles for drones and robots, and teleoperation hand-off for stuck robots.
-- Multi-tenant orgs, roles & approvals (e.g. a supervisor must approve an E-STOP release), SSO and an audit export.
-- Carbon reporting per job/customer and SLA penalties per provider.
-- Rent-out marketplace: let companies list idle drones/robots for other companies' jobs.
+- **No-fly zones are illustrative (demo only):** approximate airport FRZs, restricted areas, prisons, Royal Parks, a heliport and a temporary event zone. Real flights need NATS/CAA data, permissions and a qualified operator. Never use this for real flight planning.
+- **The drone** (Hive Skylift H5) is fictional: 45 × 35 × 25 cm bay, 5 kg, 55 km/h cruise (38 km/h fragile), wind limit 12 m/s (10.5 m/s fragile), 28 km range, 90 m cruise height.
+- **Partner shops** are generated near the drop-off with made-up names; closed shops can't be picked.
+- **Comparison prices** are estimates from typical fares. Uber's courier limit follows its published small-item rules (~15 lb / 6.8 kg). CityHop and Thames Express are fictional.
+- **Weather** comes from Open-Meteo (free for non-commercial use) and is simulated offline. Account → Demo controls overrides it.
+- Pilots, drones, tracking links and payments are simulated.

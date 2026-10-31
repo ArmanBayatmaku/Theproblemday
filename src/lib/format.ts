@@ -1,36 +1,41 @@
+import { useEffect, useState } from 'react';
+
 export const money = (n: number) => `£${n.toFixed(2)}`;
-export const money0 = (n: number) => `£${Math.round(n).toLocaleString('en-GB')}`;
+export const hhmm = (t: number) => new Date(t).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+export const mph = (ms: number) => Math.round(ms * 2.237);
+export const km = (v: number) => (v < 1 ? `${Math.round(v * 1000)} m` : `${v.toFixed(1)} km`);
+export const mins = (m: number) => (m < 60 ? `${Math.max(1, Math.round(m))} min` : `${Math.floor(m / 60)} h ${Math.round(m % 60)} min`);
 
-export function mins(m: number): string {
-  if (!Number.isFinite(m)) return '—';
-  const r = Math.max(0, Math.round(m));
-  if (r < 60) return `${r} min`;
-  const h = Math.floor(r / 60);
-  const mm = r % 60;
-  return mm ? `${h} h ${mm} min` : `${h} h`;
+export function dayLabel(t: number) {
+  const d = new Date(t);
+  if (d.toDateString() === new Date().toDateString()) return 'Today';
+  if (d.toDateString() === new Date(Date.now() + 86400_000).toDateString()) return 'Tomorrow';
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
-const pad = (n: number) => String(n).padStart(2, '0');
-export const clock = (t: number) => {
-  const d = new Date(t);
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-};
-export const clockSec = (t: number) => {
-  const d = new Date(t);
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-};
-
-export function ago(t: number, now: number): string {
-  const s = Math.round((now - t) / 1000);
-  if (s < 45) return 'just now';
-  const m = Math.round(s / 60);
-  if (m < 60) return `${m} min ago`;
-  const h = Math.round(m / 60);
-  if (h < 24) return `${h} h ago`;
-  return `${Math.round(h / 24)} d ago`;
+/** Compass point the wind blows from (e.g. 225° → "SW"). */
+export function compass(deg: number) {
+  const pts = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  return pts[Math.round((((deg % 360) + 360) % 360) / 45) % 8];
 }
 
-export const kg = (n: number) => (n < 1 ? `${Math.round(n * 1000)} g` : n >= 1000 ? `${(n / 1000).toFixed(1)} t` : `${+n.toFixed(1)} kg`);
-export const co2 = (g: number) => (g < 1000 ? `${Math.round(g)} g` : `${(g / 1000).toFixed(1)} kg`);
-export const pct = (n: number) => `${Math.round(n)}%`;
-export const titleCase = (s: string) => s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+/** Re-renders every `ms` so live things (ETAs, the drone) keep moving. */
+export function useNow(ms = 1000) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), ms);
+    return () => window.clearInterval(id);
+  }, [ms]);
+  return now;
+}
+
+/** Small deterministic random generator (same seed → same sequence). */
+export function rng(seed: string | number) {
+  let h = 2166136261;
+  for (const c of String(seed)) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  return () => {
+    h = Math.imul(h ^ (h >>> 15), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return ((h ^= h >>> 16) >>> 0) / 4294967296;
+  };
+}

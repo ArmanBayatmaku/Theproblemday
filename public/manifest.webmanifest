@@ -1,14 +1,23 @@
 {
-  "name": "Hive: send, sell, collect, move",
+  "name": "Hive: drone delivery",
   "short_name": "Hive",
-  "description": "Drones, Waymo, couriers, cargo bikes and vans in one app. London.",
+  "description": "Drone delivery across London. Send it in minutes, no post office.",
   "start_url": "/mobile/",
   "scope": "/mobile/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }

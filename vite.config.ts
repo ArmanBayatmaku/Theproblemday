@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 
 // The API server (server/index.ts) runs on :8787 during `npm run dev`; Vite proxies /api to it.
-// The consumer app lives at /mobile/ (mobile/index.html → src/mobile).
+// Two entry points, one app: the website (/) and the phone app (/mobile/, phone-framed on a laptop).
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -19,7 +19,7 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 4000,
-    // Two apps: the operations dashboard (/) and the consumer app (/mobile/).
+    // The website (/) and the phone app (/mobile/) share all of src/.
     rolldownOptions: {
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
