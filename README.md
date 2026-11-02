@@ -126,3 +126,13 @@ Waymo doesn't offer a public self-serve delivery API; its London launch is a rid
 - **Comparison prices** are estimates from typical fares. Uber's courier limit follows its published small-item rules (~15 lb / 6.8 kg). CityHop and Thames Express are fictional.
 - **Weather** comes from Open-Meteo (free for non-commercial use) and is simulated offline. Account → Demo controls overrides it.
 - Pilots, quotes, results (photos, films, roof reports), drones, tracking links and payments are simulated.
+
+## Team
+
+Built collaboratively by Team T14 at PROBLEM Day
+* Arman Bayatmaku
+* Kushalini Paul
+* Mohammed Fahmy
+* Seva Kolesnik
+* Tanvir Hossain Parvin
+
